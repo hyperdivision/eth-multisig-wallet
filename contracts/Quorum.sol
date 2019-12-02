@@ -79,7 +79,7 @@ contract Quorum is MultiOwner {
         pure
         returns (address)
     {
-        bytes32 hash = keccak256(abi.encodePacked(currentSeq, data));
+        bytes32 hash = keccak256(abi.encodePacked(byte(0x19), currentSeq, address(this), data));
         return ECDSA.recover(hash, signature);
     }
 }
