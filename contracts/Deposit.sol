@@ -15,7 +15,7 @@ contract Deposit {
     }
 
     function ()
-        public
+        external
         payable
     {
         (bool success, ) = owner.call.value(msg.value)("");
@@ -30,13 +30,13 @@ contract Deposit {
 
         if (balance == 0) return;
 
-        (bool success, ) = erc20.transfer(owner, balance);
+        bool success = erc20Contract.transfer(owner, balance);
         require(success, "Deposit: ERC20 transfer failed");
     }
 
     function sweep () public {
-        uint balance = address(this).balance
-        (bool success, ) = owner.call.value(this.balance)("");
+        uint balance = address(this).balance;
+        (bool success, ) = owner.call.value(balance)("");
         require(success, "Deposit: tranfer failed");
     }
 }
