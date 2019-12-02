@@ -18,8 +18,9 @@ contract Quorum is MultiOwner {
         uint minQuorum = quorum[operation];
         require(minQuorum > 0);
         require(signatures.length > 0);
-        uint32 sigsQuorum = uint32((quorumPrecision * signatures.length) / owners.length);
         require(sigsQuorum <= quorumPrecision);
+        uint sigsQuorum = (quorumPrecision * signatures.length) / owners.length;
+        // Compare uint with uint32
         // Strict larger than. This means 50% quorum on 2 people needs both to sign
         require(sigsQuorum > minQuorum);
 
