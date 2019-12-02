@@ -8,27 +8,27 @@ contract MultiOwner {
     constructor() internal {}
 
     modifier ownerDoesNotExist(address owner) {
-        require(!isOwner[owner]);
+        require(!isOwner[owner], "MultiOwner: `owner` must not be owner");
         _;
     }
 
     modifier ownerDoesExist(address owner) {
-        require(isOwner[owner]);
+        require(isOwner[owner], "MultiOwner: `owner` must be owner");
         _;
     }
 
     modifier ownerNotSame(address a, address b) {
-        require(a != b);
+        require(a != b, "MultiOwner: `a` must not be equal to `b`");
         _;
     }
 
     modifier notNullAddress(address _address) {
-        require(_address != address(0));
+        require(_address != address(0), "MultiOwner: zero address");
         _;
     }
 
     modifier minOwners(uint min) {
-        require(min >= owners.length);
+        require(min >= owners.length, "MultiOwner: minOwners violated");
         _;
     }
 

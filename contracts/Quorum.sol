@@ -16,20 +16,20 @@ contract Quorum is MultiOwner {
     // hasQuorum('replaceOwner', signatures, abi.encodePacked(oldOwner, newOwner))
     modifier hasQuorum(string memory operation, bytes[] memory signatures, bytes memory data) {
         uint minQuorum = quorum[operation];
-        require(minQuorum > 0);
-        require(signatures.length > 0);
-        require(sigsQuorum <= quorumPrecision);
+        require(minQuorum > 0, "Quorum: minQuorum for operation must be greater than zero");
+        require(signatures.length > 0, "Quorum: At least one signature must be given");
         uint sigsQuorum = (quorumPrecision * signatures.length) / owners.length;
         // Compare uint with uint32
+        require(sigsQuorum <= quorumPrecision, "Quorum: number of signatures must be less than quorum precision");
         // Strict larger than. This means 50% quorum on 2 people needs both to sign
-        require(sigsQuorum > minQuorum);
+        require(sigsQuorum > minQuorum, "Quorum: minQuroum number of signatures must be strictly greater than minQuorum");
 
         uint i = 0; // signature index
         uint j = 0; // owner index
         uint v = 0; // verified counter
         for (; i < signatures.length; i++) {
             address signer = verify(data, signatures[i]);
-            require(isOwner[signer]);
+            require(isOwner[signer], "Quorum: signer must be owner");
             while (j < owners.length) {
                 if (signer != owners[j]) j++;
                 else {
@@ -41,25 +41,25 @@ contract Quorum is MultiOwner {
 
             if (j == owners.length) break;
         }
-        require(v == signatures.length);
+        require(v == signatures.length, "Quorum: all signatures must be valid");
 
         seq++;
         _;
     }
 
     modifier isSignatureLength (bytes memory signature) {
-        require(signature.length == 65);
+        require(signature.length == 65, "Quorum: signature must be 65 bytes (32 s, 32 r, 1 v)");
         _;
     }
 
     modifier notNullData (bytes memory data) {
-        require(data.length > 0);
+        require(data.length > 0, "Quorum: data cannot be null");
         _;
     }
 
     function setQuorum (string memory operation, uint32 minQuroum) internal {
-        require(minQuroum > 0);
-        require(minQuroum <= quorumPrecision);
+        require(minQuroum > 0, "Quorum: minQuroum must be greater than 0");
+        require(minQuroum <= quorumPrecision, "Quorum: minQuroum must be less than precision");
 
         quorum[operation] = minQuroum;
     }
@@ -67,7 +67,7 @@ contract Quorum is MultiOwner {
     function verify (bytes memory data, bytes memory signature) public view returns(address) {
         address signer = _verify(signature, seq, data);
 
-        require(signer != address(0));
+        require(signer != address(0), "Quorum: invalid signature");
 
         return signer;
     }
