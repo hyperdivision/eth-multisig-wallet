@@ -1,7 +1,10 @@
 pragma solidity 0.5.12;
 pragma experimental ABIEncoderV2;
 
-contract Wallet is Quorum {
+import "./Quorum.sol";
+import "./PullWithdrawable.sol";
+
+contract Wallet is Quorum, PullWithdrawable {
     constructor (
         address[] memory initialOwners,
         uint32 setQuorumQuorum,
@@ -48,5 +51,24 @@ contract Wallet is Quorum {
         hasQuorum("replaceOwner", signatures, abi.encodePacked("replaceOwner", oldOwner, newOwner))
     {
         return super.replaceOwner(oldOwner, newOwner);
+    }
+
+    function updateWithdrawals (bytes[] memory signatures, address[] memory recipients, uint[] memory amounts)
+        public
+        hasQuorum("updateWithdrawals", signatures, abi.encodePacked("updateWithdrawals", recipients, amounts))
+    {
+        return super.updateWithdrawals(recipients, amounts);
+    }
+
+    function updateWithdrawalsERC20 (
+        bytes[] memory signatures,
+        address[] memory recipients,
+        address[] memory ERC20Address,
+        uint[] memory amounts
+    )
+        public
+        hasQuorum("updateWithdrawalsERC20", signatures, abi.encodePacked("updateWithdrawalsERC20", recipients, ERC20Address, amounts))
+    {
+        return super.updateWithdrawals(recipients, amounts);
     }
 }
