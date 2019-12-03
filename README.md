@@ -6,7 +6,7 @@
 
 ```js
 const keygen = require('./lib/keygen')
-const quorum = require('./lib/quroum-calc')
+const quorum = require('./lib/quorum-calc')
 const signCall = require('./lib/wallet-sign')
 
 const keypair = keygen()
