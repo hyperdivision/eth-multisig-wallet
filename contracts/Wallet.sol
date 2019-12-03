@@ -69,6 +69,6 @@ contract Wallet is Quorum, PullWithdrawable {
         public
         hasQuorum("updateWithdrawalsERC20", signatures, abi.encodePacked("updateWithdrawalsERC20", recipients, ERC20Address, amounts))
     {
-        return super.updateWithdrawals(recipients, amounts);
+        return super.updateWithdrawalsERC20(recipients, ERC20Address, amounts);
     }
 }
