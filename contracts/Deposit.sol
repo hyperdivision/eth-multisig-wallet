@@ -5,8 +5,13 @@ import "./IERC20.sol";
 contract Deposit {
     address public owner;
 
-    constructor () public {
+    constructor (address[] ERC20Sweeps) public {
         owner = msg.sender;
+
+        this.sweep();
+        for(uint i = 0; i < ERC20Sweeps.length; i++) {
+            this.sweepERC20(ERC20Sweeps[i]);
+        }
     }
 
     modifier onlyOwner () {
