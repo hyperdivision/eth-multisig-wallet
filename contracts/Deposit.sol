@@ -10,16 +10,15 @@ contract Deposit {
     }
 
     modifier onlyOwner () {
-          require(msg.sender == owner, "Deposit: only owner can call this function");
-          _;
+        require(msg.sender == owner, "Deposit: only owner can call this function");
+        _;
     }
 
     function ()
         external
         payable
     {
-        (bool success, ) = owner.call.value(msg.value)("");
-        require(success, "Deposit: transfer failed");
+        owner.transfer(msg.value);
     }
 
     function sweepERC20(address ERC20Address) public {
@@ -36,7 +35,6 @@ contract Deposit {
 
     function sweep () public {
         uint balance = address(this).balance;
-        (bool success, ) = owner.call.value(balance)("");
-        require(success, "Deposit: tranfer failed");
+        owner.transfer(balance);
     }
 }

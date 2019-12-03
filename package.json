@@ -12,11 +12,12 @@
     "secp256k1": "^3.7.1"
   },
   "devDependencies": {
+    "ethlint": "^1.2.5",
     "standard": "^14.3.1",
     "tape": "^4.11.0"
   },
   "scripts": {
-    "pretest": "standard",
+    "pretest": "standard && solium --dir contracts",
     "test": "tape test.js"
   },
   "repository": {

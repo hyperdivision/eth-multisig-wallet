@@ -1,0 +1,4 @@
+# Indentation override for all JS under lib directory
+[**.sol]
+indent_style = space
+indent_size = 4

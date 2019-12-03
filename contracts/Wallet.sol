@@ -9,7 +9,7 @@ contract Wallet is Quorum {
         uint32 removeOwnerQuorum,
         uint32 replaceOwnerQuorum
     ) public {
-        require(initialOwners.length > 0);
+        require(initialOwners.length > 0, "Wallet: initialOwners must be given");
 
         for(uint i = 0; i < initialOwners.length; i++) {
             super.addOwner(initialOwners[i]);

@@ -22,7 +22,7 @@ contract Quorum is MultiOwner {
         // Compare uint with uint32
         require(sigsQuorum <= quorumPrecision, "Quorum: number of signatures must be less than quorum precision");
         // Strict larger than. This means 50% quorum on 2 people needs both to sign
-        require(sigsQuorum > minQuorum, "Quorum: minQuroum number of signatures must be strictly greater than minQuorum");
+        require(sigsQuorum > minQuorum, "Quorum: minQuroum number of signatures must be strictly greater");
 
         uint i = 0; // signature index
         uint j = 0; // owner index
@@ -73,9 +73,9 @@ contract Quorum is MultiOwner {
     }
 
     function _verify (bytes memory signature, uint currentSeq, bytes memory data)
+        private
         isSignatureLength(signature)
         notNullData(data)
-        private
         pure
         returns (address)
     {
