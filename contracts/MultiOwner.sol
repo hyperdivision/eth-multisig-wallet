@@ -73,7 +73,7 @@ contract MultiOwner {
 
     function _removeOwnerUnsafe (address owner) private returns (uint) {
         address lastOwner = owners[owners.length - 1];
-        for (uint i = 0; i < owners.length; i++) {
+        for (uint i = 0; i < owners.length - 1; i++) {
             if (owners[i] == owner) {
                 owners[i] = lastOwner;
                 break;
