@@ -19,7 +19,8 @@ assert(await instance.isOwner.call(keypair2.address) === false)
 
 const res = await instance.replaceOwner([
   signCall(
-    0, // seq
+    0, // seq,
+    instance.address,
     keypair,
     'replaceOwner',
     ['address', 'address'],
