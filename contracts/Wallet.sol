@@ -45,7 +45,7 @@ contract Wallet is Quorum {
 
     function replaceOwner (bytes[] memory signatures, address oldOwner, address newOwner)
         public
-        hasQuorum("removeOwner", signatures, abi.encodePacked("replaceOwner", oldOwner, newOwner))
+        hasQuorum("replaceOwner", signatures, abi.encodePacked("replaceOwner", oldOwner, newOwner))
     {
         return super.replaceOwner(oldOwner, newOwner);
     }
