@@ -18,7 +18,7 @@
     "truffle": "^5.1.2"
   },
   "scripts": {
-    "pretest": "standard && solium --dir contracts",
+    "pretest": "solium --dir contracts",
     "test": "tape test.js"
   },
   "repository": {
