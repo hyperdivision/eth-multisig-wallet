@@ -1,4 +1,4 @@
-pragma solidity ^0.4.23;
+pragma solidity 0.5.12;
 
 /*
 The MIT License (MIT)
@@ -24,8 +24,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //solhint-disable no-inline-assembly
 
 contract CloneFactory {
-    function create2Clone(address target, uint256 salt) internal returns (address result) {
-        address addr;
+    function create2Clone(address target, uint256 salt) internal returns (address addr) {
         bytes20 targetBytes = bytes20(target);
         // solium-disable-next-line security/no-inline-assembly
         assembly {

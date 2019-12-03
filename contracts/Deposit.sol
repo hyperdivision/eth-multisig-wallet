@@ -5,13 +5,8 @@ import "./IERC20.sol";
 contract Deposit {
     address public owner;
 
-    constructor (address[] ERC20Sweeps) public {
+    constructor () public {
         owner = msg.sender;
-
-        this.sweep();
-        for(uint i = 0; i < ERC20Sweeps.length; i++) {
-            this.sweepERC20(ERC20Sweeps[i]);
-        }
     }
 
     modifier onlyOwner () {
@@ -23,7 +18,7 @@ contract Deposit {
         external
         payable
     {
-        owner.transfer(msg.value);
+        _payable(owner).transfer(msg.value);
     }
 
     function sweepERC20(address ERC20Address) public {
@@ -40,6 +35,10 @@ contract Deposit {
 
     function sweep () public {
         uint balance = address(this).balance;
-        owner.transfer(balance);
+        _payable(owner).transfer(balance);
+    }
+
+    function _payable(address addr) private pure returns(address payable){
+        return address(uint160(addr));
     }
 }

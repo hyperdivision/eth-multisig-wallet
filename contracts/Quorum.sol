@@ -65,21 +65,21 @@ contract Quorum is MultiOwner {
     }
 
     function verify (bytes memory data, bytes memory signature) public view returns(address) {
-        address signer = _verify(signature, seq, data);
+        address signer = _verify(signature, seq, address(this), data);
 
         require(signer != address(0), "Quorum: invalid signature");
 
         return signer;
     }
 
-    function _verify (bytes memory signature, uint currentSeq, bytes memory data)
+    function _verify (bytes memory signature, uint currentSeq, address addr, bytes memory data)
         private
         isSignatureLength(signature)
         notNullData(data)
         pure
         returns (address)
     {
-        bytes32 hash = keccak256(abi.encodePacked(byte(0x19), currentSeq, address(this), data));
+        bytes32 hash = keccak256(abi.encodePacked(byte(0x19), currentSeq, addr, data));
         return ECDSA.recover(hash, signature);
     }
 }
