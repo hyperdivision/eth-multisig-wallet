@@ -9,9 +9,10 @@ contract Deposit {
         owner = msg.sender;
     }
 
-    modifier onlyOwner () {
-        require(msg.sender == owner, "Deposit: only owner can call this function");
-        _;
+    function init (address _owner) public {
+        require(address(0) == owner, "Deposit: init owner cannot be set");
+
+        owner = _owner;
     }
 
     function ()
