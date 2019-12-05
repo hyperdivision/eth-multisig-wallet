@@ -71,4 +71,8 @@ contract Wallet is Quorum, PullWithdrawable {
     {
         return super.updateWithdrawalsERC20(recipients, ERC20Address, amounts);
     }
+
+    function () external payable {
+        require(msg.data.length == 0, "Wallet: fallback function does not take arguments");
+    }
 }
