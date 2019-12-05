@@ -3,13 +3,8 @@ language: node_js
 node_js:
   - lts/*
 
-addons:
-  apt:
-    packages:
-      - python3-pip
-
 before_script:
-  - pip3 install --upgrade pip
+  - curl https://bootstrap.pypa.io/get-pip.py -o- | python
   - pip3 install slither-analyzer
 
 script:
