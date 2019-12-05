@@ -22,7 +22,7 @@ contract Deposit {
         _payable(owner).transfer(msg.value);
     }
 
-    function sweepERC20(address ERC20Address) public {
+    function sweepERC20(address ERC20Address) external {
         IERC20 erc20Contract = IERC20(ERC20Address);
 
         address self = address(this);
@@ -34,7 +34,7 @@ contract Deposit {
         require(success, "Deposit: ERC20 transfer failed");
     }
 
-    function sweep () public {
+    function sweep () external {
         uint balance = address(this).balance;
         _payable(owner).transfer(balance);
     }
