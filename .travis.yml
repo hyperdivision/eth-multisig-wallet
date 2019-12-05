@@ -12,8 +12,8 @@ addons:
       - python3-pip
 
 before_install:
-  - pip3 install --upgrade pip
-  - pip3 install slither-analyzer
+  - python3.8 -m pip3 install --upgrade pip
+  - python3.8 -m pip3 install slither-analyzer
 
 script:
   - slither .
