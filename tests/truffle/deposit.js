@@ -11,13 +11,18 @@ const EPSILON = BigInt(web3.utils.toWei('0.004', 'ether'))
 
 contract('2nd Auth test', async accounts => {
   it('naive', async () => {
-    const instance = await Deposit.new()
+    const instance = await Deposit.new(accounts[0])
     const factory = await DepositFactory.new(instance.address)
 
-    var salt = '0x' + crypto.randomBytes(32).toString('hex')
+    var salt = crypto.randomBytes(32)
 
-    const code = cloneFactory(instance.address)
-    const forwardAddr = depositAddress(factory.address, code, salt)
+    const forwardAddr = toAddress(
+      depositAddress(
+        fromAddress(factory.address),
+        cloneFactory(fromAddress(instance.address)),
+        salt
+      )
+    )
 
     const initialBalance = await web3.eth.getBalance(await instance.owner.call())
     assert(await web3.eth.getBalance(instance.address) === '0', 'initial instance balance')
@@ -36,3 +41,11 @@ contract('2nd Auth test', async accounts => {
     assert(BigInt(initialBalance) - BigInt(await web3.eth.getBalance(await instance.owner.call())) < EPSILON, 'account balance after sweep')
   })
 })
+
+function toAddress (buf) {
+  return '0x' + buf.toString('hex')
+}
+
+function fromAddress (str) {
+  return Buffer.from(str.replace(/^0x/, ''), 'hex')
+}

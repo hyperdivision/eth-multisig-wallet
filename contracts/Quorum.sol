@@ -8,7 +8,7 @@ contract Quorum is MultiOwner {
     uint public seq;
 
     mapping (string => uint) public quorum;
-    uint32 quorumPrecision = 0xffffffff;
+    uint32 constant quorumPrecision = 0xffffffff;
 
     // Mark as abstract contract
     constructor() internal {}
