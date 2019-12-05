@@ -3,8 +3,8 @@ pragma solidity 0.5.12;
 import "./IERC20.sol";
 
 contract PullWithdrawable {
-    mapping (address => uint) withdrawals;
-    mapping (address => mapping(address => uint)) withdrawalsERC20;
+    mapping (address => uint) public withdrawals;
+    mapping (address => mapping(address => uint)) public withdrawalsERC20;
 
     constructor () internal {}
 
