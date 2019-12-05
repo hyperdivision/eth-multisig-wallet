@@ -14,7 +14,7 @@ addons:
 
 before_install:
   - curl https://bootstrap.pypa.io/get-pip.py -o- | sudo python3.8
-  - pip3 install slither-analyzer
+  - sudo pip3 install slither-analyzer
 
 script:
   - slither .
