@@ -10,6 +10,7 @@ addons:
       - python3-pip
 
 before_install:
+  - python --version
   - pip3 install --upgrade pip
   - pip3 install 'slither-analyzer==0.6.8'
 
