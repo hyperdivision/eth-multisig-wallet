@@ -5,8 +5,8 @@ import "./IERC20.sol";
 contract Deposit {
     address public owner;
 
-    constructor () public {
-        owner = msg.sender;
+    constructor (address _owner) public {
+        owner = _owner;
     }
 
     function init (address _owner) public {
