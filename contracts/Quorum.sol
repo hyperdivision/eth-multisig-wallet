@@ -29,7 +29,7 @@ contract Quorum is MultiOwner {
         uint v = 0; // verified counter
         for (; i < signatures.length; i++) {
             address signer = verify(data, signatures[i]);
-            require(isOwner[signer], "Quorum: signer must be owner");
+            require(isOwner[signer], "Quorum: invalid signature (perhaps invalid signer or wrong data)");
             while (j < owners.length) {
                 if (signer != owners[j]) j++;
                 else {
