@@ -9,7 +9,7 @@ contract Deposit {
         owner = _owner;
     }
 
-    function init (address _owner) public {
+    function init (address _owner) external {
         require(address(0) == owner, "Deposit: init owner cannot be set");
 
         owner = _owner;

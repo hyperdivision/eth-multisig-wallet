@@ -25,21 +25,21 @@ contract PullWithdrawable {
         }
     }
 
-    function withdraw (uint amount) public {
+    function withdraw (uint amount) external {
         uint balance = withdrawals[msg.sender];
         require(amount <= balance, "PullWithdrawable: amount must be less than balance");
         withdrawals[msg.sender] -= amount;
         msg.sender.transfer(amount);
     }
 
-    function withdraw () public {
+    function withdraw () external {
         uint balance = withdrawals[msg.sender];
         require(0 < balance, "PullWithdrawable: no balance");
         withdrawals[msg.sender] = 0;
         msg.sender.transfer(balance);
     }
 
-    function withdrawERC20 (address ERC20Address, uint amount) public {
+    function withdrawERC20 (address ERC20Address, uint amount) external {
         uint balance = withdrawalsERC20[ERC20Address][msg.sender];
         require(amount <= balance, "PullWithdrawable: amount must be less than balance");
 
@@ -50,7 +50,7 @@ contract PullWithdrawable {
         require(success, "Deposit: ERC20 transfer failed");
     }
 
-    function withdrawERC20 (address ERC20Address) public {
+    function withdrawERC20 (address ERC20Address) external {
         uint balance = withdrawalsERC20[ERC20Address][msg.sender];
         require(0 < balance, "PullWithdrawable: no balance");
         IERC20 erc20Contract = IERC20(ERC20Address);

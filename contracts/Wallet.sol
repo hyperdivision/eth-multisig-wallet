@@ -11,7 +11,7 @@ contract Wallet is Quorum, PullWithdrawable {
         uint32 addOwnerQuorum,
         uint32 removeOwnerQuorum,
         uint32 replaceOwnerQuorum
-    ) public {
+    ) external {
         require(initialOwners.length > 0, "Wallet: initialOwners must be given");
 
         for(uint i = 0; i < initialOwners.length; i++) {
@@ -25,14 +25,14 @@ contract Wallet is Quorum, PullWithdrawable {
     }
 
     function setQuorum (bytes[] memory signatures, string memory operation, uint32 minQuroum)
-        public
+        external
         hasQuorum("setQuorum", signatures, abi.encodePacked("setQuorum", operation, minQuroum))
     {
         super.setQuorum(operation, minQuroum);
     }
 
     function addOwner (bytes[] memory signatures, address owner)
-        public
+        external
         hasQuorum("addOwner", signatures, abi.encodePacked("addOwner", owner))
         returns (uint)
     {
@@ -40,21 +40,21 @@ contract Wallet is Quorum, PullWithdrawable {
     }
 
     function removeOwner (bytes[] memory signatures, address owner)
-        public
+        external
         hasQuorum("removeOwner", signatures, abi.encodePacked("removeOwner", owner))
     {
         return super.removeOwner(owner);
     }
 
     function replaceOwner (bytes[] memory signatures, address oldOwner, address newOwner)
-        public
+        external
         hasQuorum("replaceOwner", signatures, abi.encodePacked("replaceOwner", oldOwner, newOwner))
     {
         return super.replaceOwner(oldOwner, newOwner);
     }
 
     function updateWithdrawals (bytes[] memory signatures, address[] memory recipients, uint[] memory amounts)
-        public
+        external
         hasQuorum("updateWithdrawals", signatures, abi.encodePacked("updateWithdrawals", recipients, amounts))
     {
         return super.updateWithdrawals(recipients, amounts);
@@ -66,7 +66,7 @@ contract Wallet is Quorum, PullWithdrawable {
         address[] memory ERC20Address,
         uint[] memory amounts
     )
-        public
+        external
         hasQuorum("updateWithdrawalsERC20", signatures, abi.encodePacked("updateWithdrawalsERC20", recipients, ERC20Address, amounts))
     {
         return super.updateWithdrawalsERC20(recipients, ERC20Address, amounts);
