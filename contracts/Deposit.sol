@@ -3,13 +3,13 @@ pragma solidity 0.5.12;
 import "./IERC20.sol";
 
 contract Deposit {
-    address public owner;
+    address payable public owner;
 
-    constructor (address _owner) public {
+    constructor (address payable _owner) public {
         owner = _owner;
     }
 
-    function init (address _owner) external {
+    function init (address payable _owner) external {
         require(address(0) == owner, "Deposit: init owner cannot be set");
 
         owner = _owner;
@@ -19,7 +19,7 @@ contract Deposit {
         external
         payable
     {
-        _payable(owner).transfer(msg.value);
+        owner.transfer(msg.value);
     }
 
     function sweepERC20(address ERC20Address) external {
@@ -36,10 +36,6 @@ contract Deposit {
 
     function sweep () external {
         uint balance = address(this).balance;
-        _payable(owner).transfer(balance);
-    }
-
-    function _payable(address addr) private pure returns(address payable){
-        return address(uint160(addr));
+        owner.transfer(balance);
     }
 }

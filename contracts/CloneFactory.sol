@@ -24,7 +24,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //solhint-disable no-inline-assembly
 
 contract CloneFactory {
-    function create2Clone(address target, uint256 salt) internal returns (address addr) {
+    function create2Clone(address target, uint256 salt) internal returns (address payable addr) {
         bytes20 targetBytes = bytes20(target);
         // solium-disable-next-line security/no-inline-assembly
         assembly {

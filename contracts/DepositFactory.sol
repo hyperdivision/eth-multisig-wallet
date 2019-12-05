@@ -1,3 +1,5 @@
+pragma solidity 0.5.12;
+
 import "./CloneFactory.sol";
 import "./Deposit.sol";
 
@@ -8,13 +10,9 @@ contract DepositFactory is CloneFactory {
         libraryAddress = _libraryAddress;
     }
 
-    function create(address owner, uint256 salt) public returns(address) {
-        address spawned = super.create2Clone(libraryAddress, salt);
-        Deposit(_payable(spawned)).init(owner);
+    function create(address payable owner, uint256 salt) public returns(address) {
+        address payable spawned = super.create2Clone(libraryAddress, salt);
+        Deposit(spawned).init(owner);
         return spawned;
-    }
-
-    function _payable(address addr) private pure returns(address payable){
-        return address(uint160(addr));
     }
 }
