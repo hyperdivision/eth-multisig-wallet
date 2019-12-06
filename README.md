@@ -1,5 +1,7 @@
 # `eth-multisig-wallet`
 
+[![Build Status](https://travis-ci.org/hyperdivision/eth-multisig-wallet.svg?branch=master)](https://travis-ci.org/hyperdivision/eth-multisig-wallet)
+
 > Ethereum Multisig Wallet
 
 ## Usage
