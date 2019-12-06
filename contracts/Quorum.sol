@@ -15,6 +15,7 @@ contract Quorum is MultiOwner {
 
     // hasQuorum('replaceOwner', signatures, abi.encodePacked(oldOwner, newOwner))
     modifier hasQuorum(string memory operation, bytes[] memory signatures, bytes memory data) {
+        require(isOwner[msg.sender], "Quorum: sender must be owner");
         uint minQuorum = quorum[operation];
         require(minQuorum > 0, "Quorum: minQuorum for operation must be greater than zero");
         require(signatures.length > 0, "Quorum: At least one signature must be given");
