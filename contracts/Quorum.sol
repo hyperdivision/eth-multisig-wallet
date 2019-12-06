@@ -60,7 +60,7 @@ contract Quorum is MultiOwner {
 
     function setQuorum (string memory operation, uint32 minQuroum) internal {
         require(minQuroum > 0, "Quorum: minQuroum must be greater than 0");
-        require(minQuroum <= quorumPrecision, "Quorum: minQuroum must be less than precision");
+        require(minQuroum <= quorumPrecision, "Quorum: minQuroum must be at most precision");
 
         quorum[operation] = minQuroum;
     }
