@@ -1,5 +1,6 @@
 pragma solidity 0.5.12;
 pragma experimental ABIEncoderV2;
+pragma experimental SMTChecker;
 
 import "./Quorum.sol";
 import "./PullWithdrawable.sol";
