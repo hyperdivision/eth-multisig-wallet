@@ -4,16 +4,16 @@ import "./IERC20.sol";
 
 contract Deposit {
     event Deposit(address from, uint amount);
-    address payable public owner;
+    address payable public trustedOwner;
 
-    constructor (address payable _owner) public {
-        owner = _owner;
+    constructor (address payable _trustedOwner) public {
+        trustedOwner = _trustedOwner;
     }
 
-    function init (address payable _owner) external {
-        require(address(0) == owner, "Deposit: init owner cannot be set");
+    function init (address payable _trustedOwner) external {
+        require(address(0) == trustedOwner, "Deposit: init trustedOwner cannot be set");
 
-        owner = _owner;
+        trustedOwner = _trustedOwner;
     }
 
     function ()
@@ -21,7 +21,7 @@ contract Deposit {
         payable
     {
         require(msg.data.length == 0, "Wallet: fallback function does not take arguments");
-        (bool success, ) = owner.call.value(msg.value)();
+        (bool success, ) = trustedOwner.call.value(msg.value)();
         require(success)
         emit Deposit(msg.sender, msg.value);
     }
@@ -34,12 +34,12 @@ contract Deposit {
 
         if (balance == 0) return;
 
-        bool success = erc20Contract.transfer(owner, balance);
+        bool success = erc20Contract.transfer(trustedOwner, balance);
         require(success, "Deposit: ERC20 transfer failed");
     }
 
     function sweep () external {
         uint balance = address(this).balance;
-        owner.transfer(balance);
+        trustedOwner.transfer(balance);
     }
 }

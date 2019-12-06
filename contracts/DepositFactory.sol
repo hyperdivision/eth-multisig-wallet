@@ -10,9 +10,9 @@ contract DepositFactory is CloneFactory {
         libraryAddress = _libraryAddress;
     }
 
-    function create(address payable owner, uint256 salt) public returns(address) {
+    function create(address payable trustedOwner, uint256 salt) public returns(address) {
         address payable spawned = super.create2Clone(libraryAddress, salt);
-        Deposit(spawned).init(owner);
+        Deposit(spawned).init(trustedOwner);
         return spawned;
     }
 }
