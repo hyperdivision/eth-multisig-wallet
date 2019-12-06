@@ -3,6 +3,9 @@ pragma solidity 0.5.12;
 import "./IERC20.sol";
 
 contract PullWithdrawable {
+    event Withdrawal(address to, uint amount);
+    event WithdrawalERC20(address ERC20Address, address to, uint amount);
+
     mapping (address => uint) public withdrawals;
     mapping (address => mapping(address => uint)) public withdrawalsERC20;
 
@@ -30,6 +33,7 @@ contract PullWithdrawable {
         require(amount <= balance, "PullWithdrawable: amount must be less than balance");
         withdrawals[msg.sender] -= amount;
         msg.sender.transfer(amount);
+        emit Withdrawal(msg.sender, amount);
     }
 
     function withdraw () external {
@@ -37,6 +41,7 @@ contract PullWithdrawable {
         require(0 < balance, "PullWithdrawable: no balance");
         withdrawals[msg.sender] = 0;
         msg.sender.transfer(balance);
+        emit Withdrawal(msg.sender, balance);
     }
 
     function withdrawERC20 (address ERC20Address, uint amount) external {
@@ -48,6 +53,7 @@ contract PullWithdrawable {
 
         bool success = erc20Contract.transfer(msg.sender, amount);
         require(success, "Deposit: ERC20 transfer failed");
+        emit WithdrawalERC20(ERC20Address, msg.sender, amount);
     }
 
     function withdrawERC20 (address ERC20Address) external {
@@ -58,5 +64,6 @@ contract PullWithdrawable {
 
         bool success = erc20Contract.transfer(msg.sender, balance);
         require(success, "Deposit: ERC20 transfer failed");
+        emit WithdrawalERC20(ERC20Address, msg.sender, balance);
     }
 }

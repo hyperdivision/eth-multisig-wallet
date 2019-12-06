@@ -3,6 +3,7 @@ pragma solidity 0.5.12;
 import "./IERC20.sol";
 
 contract Deposit {
+    event Deposit(address from, uint amount);
     address payable public owner;
 
     constructor (address payable _owner) public {
@@ -20,6 +21,7 @@ contract Deposit {
         payable
     {
         owner.transfer(msg.value);
+        emit Deposit(msg.sender, msg.value);
     }
 
     function sweepERC20(address ERC20Address) external {
