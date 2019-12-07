@@ -22,7 +22,7 @@ contract Deposit {
     {
         require(msg.data.length == 0, "Wallet: fallback function does not take arguments");
         (bool success, ) = trustedOwner.call.value(msg.value)();
-        require(success)
+        require(success);
         emit Deposit(msg.sender, msg.value);
     }
 
