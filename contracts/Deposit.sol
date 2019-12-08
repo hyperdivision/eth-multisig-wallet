@@ -21,6 +21,9 @@ contract Deposit {
         payable
     {
         require(msg.data.length == 0, "Wallet: fallback function does not take arguments");
+        // Since we only forward to a trusted contract, and we want to forward
+        // the gas stipend also
+        // solium-disable-next-line security/no-call-value
         (bool success, ) = trustedOwner.call.value(msg.value)("");
         require(success);
         emit DepositForwarded(msg.sender, msg.value);
