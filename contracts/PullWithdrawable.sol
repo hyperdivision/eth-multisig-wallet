@@ -3,8 +3,8 @@ pragma solidity 0.5.12;
 import "./IERC20.sol";
 
 contract PullWithdrawable {
-    event Withdrawal(address to, uint amount);
-    event WithdrawalERC20(address ERC20Address, address to, uint amount);
+    event Withdrawal(address indexed to, uint amount);
+    event WithdrawalERC20(address indexed ERC20Address, address indexed to, uint amount);
 
     mapping (address => uint) public withdrawals;
     mapping (address => mapping(address => uint)) public withdrawalsERC20;

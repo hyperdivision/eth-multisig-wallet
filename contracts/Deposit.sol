@@ -3,7 +3,9 @@ pragma solidity 0.5.12;
 import "./IERC20.sol";
 
 contract Deposit {
-    event DepositForwarded(address from, uint amount);
+    event DepositForwarded(address indexed from, uint amount);
+    event DepositForwardedERC20(address indexed ERC20Address, address indexed from, uint amount);
+
     address payable public trustedOwner;
 
     constructor (address payable _trustedOwner) public {
@@ -26,7 +28,7 @@ contract Deposit {
         // solium-disable-next-line security/no-call-value
         (bool success, ) = trustedOwner.call.value(msg.value)("");
         require(success);
-        emit DepositForwarded(msg.sender, msg.value);
+        emit DepositForwarded(address(this), msg.value);
     }
 
     function sweepERC20(address ERC20Address) external {
@@ -39,10 +41,12 @@ contract Deposit {
 
         bool success = erc20Contract.transfer(trustedOwner, balance);
         require(success, "Deposit: ERC20 transfer failed");
+        emit DepositForwardedERC20(ERC20Address, address(this), balance)
     }
 
     function sweep () external {
         uint balance = address(this).balance;
         trustedOwner.transfer(balance);
+        emit DepositForwarded(address(this), balance);
     }
 }
