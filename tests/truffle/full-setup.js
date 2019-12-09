@@ -110,6 +110,14 @@ contract('2nd Auth test', async accounts => {
         'setQuorum',
         ['string', 'uint32'],
         ['updateWithdrawals', quorum(0.5)]
+      ),
+      signCall(
+        await wallet.seq.call(), // seq,
+        wallet.address,
+        keypairB,
+        'setQuorum',
+        ['string', 'uint32'],
+        ['updateWithdrawals', quorum(0.5)]
       )
     ], 'updateWithdrawals', quorum(0.5))
     console.log('setQuorum complete')
@@ -122,6 +130,14 @@ contract('2nd Auth test', async accounts => {
         'updateWithdrawals',
         ['address[]', 'uint[]'],
         [[user], [web3.utils.toWei('0.5', 'ether')]]
+      ),
+      signCall(
+        await wallet.seq.call(), // seq,
+        wallet.address,
+        keypairB,
+        'updateWithdrawals',
+        ['address[]', 'uint[]'],
+        [[user], [web3.utils.toWei('0.5', 'ether')]]
       )
     ], [user], [web3.utils.toWei('0.5', 'ether')])
     console.log('updateWithdrawals complete')
@@ -131,6 +147,14 @@ contract('2nd Auth test', async accounts => {
         await wallet.seq.call(), // seq,
         wallet.address,
         keypairA,
+        'updateWithdrawals',
+        ['address[]', 'uint[]'],
+        [[user], [subtract(web3.utils.toWei('-0.4', 'ether'))]]
+      ),
+      signCall(
+        await wallet.seq.call(), // seq,
+        wallet.address,
+        keypairB,
         'updateWithdrawals',
         ['address[]', 'uint[]'],
         [[user], [subtract(web3.utils.toWei('-0.4', 'ether'))]]
