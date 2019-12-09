@@ -28,7 +28,7 @@ contract Deposit {
         // the gas stipend also
         // solium-disable-next-line security/no-call-value
         (bool success, ) = trustedOwner.call.value(msg.value)("");
-        require(success);
+        require(success, "Deposit: Forward failed");
         emit DepositForwarded(address(this), msg.value);
     }
 
