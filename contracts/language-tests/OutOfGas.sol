@@ -1,5 +1,5 @@
 contract OutOfGas {
-    uint public seq;
+    uint public seq = 0;
 
     function loop () public {
         while (true) {
