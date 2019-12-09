@@ -50,7 +50,7 @@ contract('2nd Auth test', async accounts => {
     console.log('-----')
 
     // Deploy
-    await depositFactory.create(await deposit.owner.call(), user1Salt)
+    await depositFactory.create(await deposit.trustedOwner.call(), user1Salt)
     const userDeposit = await Deposit.at(userAddress)
 
     console.log('User:', await web3.eth.getBalance(user))
