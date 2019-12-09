@@ -8,7 +8,7 @@ contract Quorum is MultiOwner {
     uint public seq;
 
     mapping (string => uint) public quorum;
-    uint32 constant quorumPrecision = 0xffffffff;
+    uint32 constant QUORUM_PRECISION = 0xffffffff;
 
     // Mark as abstract contract
     constructor() internal {}
@@ -20,8 +20,8 @@ contract Quorum is MultiOwner {
         require(minQuorum > 0, "Quorum: minQuorum for operation must be greater than zero");
         require(signatures.length > 0, "Quorum: At least one signature must be given");
         require(signatures.length <= owners.length, "Quorum: Each owner can sign at most once");
-        uint32 sigsQuorum = uint32((quorumPrecision * signatures.length) / owners.length);
-        require(sigsQuorum <= quorumPrecision, "Quorum: number of signatures must be less than quorum precision");
+        uint32 sigsQuorum = uint32((QUORUM_PRECISION * signatures.length) / owners.length);
+        require(sigsQuorum <= QUORUM_PRECISION, "Quorum: number of signatures must be less than quorum precision");
         // Strict larger than. This means 50% quorum on 2 people needs both to sign
         require(sigsQuorum > minQuorum, "Quorum: minQuroum number of signatures must be strictly greater");
 
@@ -60,7 +60,7 @@ contract Quorum is MultiOwner {
 
     function setQuorum (string memory operation, uint32 minQuroum) internal {
         require(minQuroum > 0, "Quorum: minQuroum must be greater than 0");
-        require(minQuroum <= quorumPrecision, "Quorum: minQuroum must be at most precision");
+        require(minQuroum <= QUORUM_PRECISION, "Quorum: minQuroum must be at most precision");
 
         quorum[operation] = minQuroum;
     }
