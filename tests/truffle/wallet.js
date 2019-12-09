@@ -16,7 +16,7 @@ contract('2nd Auth test', async accounts => {
 
     await instance.addOwner([
       signCall(
-        0, // seq,
+        await instance.seq.call(),
         instance.address,
         keypair,
         'addOwner',
@@ -31,18 +31,18 @@ contract('2nd Auth test', async accounts => {
 
     await instance.setQuorum([
       signCall(
-        1, // seq,
+        await instance.seq.call(),
         instance.address,
         keypair,
-        'setQuroum',
+        'setQuorum',
         ['string', 'uint32'],
         ['updateWithdrawals', quorum(0.5)]
       ),
       signCall(
-        1, // seq,
+        await instance.seq.call(),
         instance.address,
         keypair2,
-        'setQuroum',
+        'setQuorum',
         ['string', 'uint32'],
         ['updateWithdrawals', quorum(0.5)]
       )
