@@ -42,7 +42,7 @@ contract Deposit {
 
         bool success = erc20Contract.transfer(trustedOwner, balance);
         require(success, "Deposit: ERC20 transfer failed");
-        emit DepositSweepERC20(ERC20Address, address(this), balance)
+        emit DepositSweepERC20(ERC20Address, address(this), balance);
     }
 
     function sweep () external {
