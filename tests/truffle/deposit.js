@@ -40,6 +40,32 @@ contract('2nd Auth test', async accounts => {
     assert(await web3.eth.getBalance(instance.address) === '0', 'instance balance after sweep')
     assert(BigInt(initialBalance) - BigInt(await web3.eth.getBalance(await instance.trustedOwner.call())) < EPSILON, 'account balance after sweep')
   })
+
+  it('naive, deploy first', async () => {
+    const instance = await Deposit.new(accounts[0])
+    const factory = await DepositFactory.new(instance.address)
+
+    var salt = crypto.randomBytes(32)
+
+    const forwardAddr = toAddress(
+      depositAddress(
+        fromAddress(factory.address),
+        cloneFactory(fromAddress(instance.address)),
+        salt
+      )
+    )
+
+    const initialBalance = await web3.eth.getBalance(await instance.trustedOwner.call())
+    assert(await web3.eth.getBalance(instance.address) === '0', 'initial instance balance')
+
+    await factory.create(await instance.trustedOwner.call(), salt)
+    await web3.eth.sendTransaction({ to: forwardAddr, from: await instance.trustedOwner.call(), value: web3.utils.toWei('0.5', 'ether') })
+
+    const specificInstance = await Deposit.at(forwardAddr)
+    assert(await web3.eth.getBalance(specificInstance.address) === '0', 'clone balance')
+    assert(await web3.eth.getBalance(instance.address) === '0', 'instance balance')
+    assert(BigInt(initialBalance) - BigInt(await web3.eth.getBalance(await instance.trustedOwner.call())) < EPSILON, 'account balance after sweep')
+  })
 })
 
 function toAddress (buf) {
