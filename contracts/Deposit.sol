@@ -4,7 +4,8 @@ import "./IERC20.sol";
 
 contract Deposit {
     event DepositForwarded(address indexed from, uint amount);
-    event DepositForwardedERC20(address indexed ERC20Address, address indexed from, uint amount);
+    event DepositSweep(address indexed from, uint amount);
+    event DepositSweepERC20(address indexed ERC20Address, address indexed from, uint amount);
 
     address payable public trustedOwner;
 
@@ -41,12 +42,12 @@ contract Deposit {
 
         bool success = erc20Contract.transfer(trustedOwner, balance);
         require(success, "Deposit: ERC20 transfer failed");
-        emit DepositForwardedERC20(ERC20Address, address(this), balance)
+        emit DepositSweepERC20(ERC20Address, address(this), balance)
     }
 
     function sweep () external {
         uint balance = address(this).balance;
         trustedOwner.transfer(balance);
-        emit DepositForwarded(address(this), balance);
+        emit DepositSweep(address(this), balance);
     }
 }
