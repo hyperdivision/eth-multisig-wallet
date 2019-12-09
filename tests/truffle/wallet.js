@@ -9,10 +9,10 @@ contract('2nd Auth test', async accounts => {
     const keypair = keygen()
     const keypair2 = keygen()
 
-    const instance = await Wallet.new([keypair.address], quorum(0.5), quorum(0.5), quorum(0.5), quorum(0.5))
+    const instance = await Wallet.new([toAddress(keypair.address)], quorum(0.5), quorum(0.5), quorum(0.5), quorum(0.5))
 
-    assert(await instance.isOwner.call(keypair.address) === true)
-    assert(await instance.isOwner.call(keypair2.address) === false)
+    assert(await instance.isOwner.call(toAddress(keypair.address)) === true)
+    assert(await instance.isOwner.call(toAddress(keypair2.address)) === false)
 
     await instance.addOwner([
       signCall(
@@ -21,13 +21,13 @@ contract('2nd Auth test', async accounts => {
         keypair,
         'addOwner',
         ['address'],
-        [keypair2.address]
+        [toAddress(keypair2.address)]
       )
-    ], keypair2.address)
+    ], toAddress(keypair2.address))
 
     assert((await instance.seq.call()).toNumber() === 1)
-    assert(await instance.isOwner.call(keypair.address) === true)
-    assert(await instance.isOwner.call(keypair2.address) === true)
+    assert(await instance.isOwner.call(toAddress(keypair.address)) === true)
+    assert(await instance.isOwner.call(toAddress(keypair2.address)) === true)
 
     await instance.setQuorum([
       signCall(
@@ -49,3 +49,7 @@ contract('2nd Auth test', async accounts => {
     ], 'updateWithdrawals', quorum(0.5))
   })
 })
+
+function toAddress (buf) {
+  return '0x' + buf.toString('hex')
+}
