@@ -81,6 +81,10 @@ contract MultiOwner {
             }
         }
 
+        // Since addresses are value types, in the above we copy the data, so
+        // if we want to get rid of the "over end" item, we need to delete it
+        // before we decrement the length
+        delete owners[owners.length - 1];
         owners.length -= 1;
         return owners.length;
     }
