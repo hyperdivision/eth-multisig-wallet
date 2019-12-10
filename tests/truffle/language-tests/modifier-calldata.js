@@ -1,5 +1,5 @@
 return
-const ModifierCalldata = artifacts.require('test/ModifierCalldata')
+const ModifierCalldata = artifacts.require('language-tests/ModifierCalldata')
 
 contract('ModifierCalldata', async accounts => {
   it('simple', async () => {

@@ -1,5 +1,5 @@
 return
-const FunctionCalldata = artifacts.require('test/FunctionCalldata')
+const FunctionCalldata = artifacts.require('language-tests/FunctionCalldata')
 
 contract('FunctionCalldata', async accounts => {
   it('simple', async () => {

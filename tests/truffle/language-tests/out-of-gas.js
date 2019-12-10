@@ -1,4 +1,4 @@
-const OutOfGas = artifacts.require('test/OutOfGas')
+const OutOfGas = artifacts.require('language-tests/OutOfGas')
 
 contract('OutOfGas', async accounts => {
   it('simple', async () => {
