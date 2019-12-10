@@ -1,3 +1,4 @@
+/* global artifacts, contract, it */
 return
 const FunctionCalldata = artifacts.require('language-tests/FunctionCalldata')
 

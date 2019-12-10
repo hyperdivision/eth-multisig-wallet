@@ -1,3 +1,5 @@
+/* global artifacts, contract, it, assert */
+
 const OutOfGas = artifacts.require('language-tests/OutOfGas')
 
 contract('OutOfGas', async accounts => {

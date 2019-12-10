@@ -1,3 +1,4 @@
+/* global artifacts, contract, it, assert */
 const Wallet = artifacts.require('Wallet')
 
 const keygen = require('../../lib/keygen')

@@ -1,3 +1,4 @@
+/* global artifacts, contract, it */
 return
 const ModifierCalldata = artifacts.require('language-tests/ModifierCalldata')
 
