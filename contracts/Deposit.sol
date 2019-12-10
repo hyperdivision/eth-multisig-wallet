@@ -32,7 +32,7 @@ contract Deposit {
         emit DepositForwarded(address(this), msg.value);
     }
 
-    function sweepERC20(address ERC20Address) external {
+    function sweepERC20(address ERC20Address, uint gasLimit) external {
         IERC20 erc20Contract = IERC20(ERC20Address);
 
         address self = address(this);
@@ -40,7 +40,7 @@ contract Deposit {
 
         if (balance == 0) return;
 
-        bool success = erc20Contract.transfer(trustedOwner, balance);
+        bool success = erc20Contract.transfer.gas(gasLimit)(trustedOwner, balance);
         require(success, "Deposit: ERC20 transfer failed");
         emit DepositSweepERC20(ERC20Address, address(this), balance);
     }
