@@ -9,7 +9,9 @@ contract PullWithdrawable {
     mapping (address => uint) public withdrawals;
     mapping (address => mapping(address => uint)) public withdrawalsERC20;
 
+    // Mark as abstract contract
     constructor () internal {}
+    // solium-disable-previous-line no-empty-blocks
 
     function updateWithdrawals (address[] memory recipients, uint[] memory amounts) internal {
         require(recipients.length > 0, "PullWithdrawable: recipients must be given");

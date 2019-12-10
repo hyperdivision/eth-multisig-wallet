@@ -6,6 +6,7 @@ contract MultiOwner {
 
     // Mark as abstract contract
     constructor() internal {}
+    // solium-disable-previous-line no-empty-blocks
 
     modifier ownerDoesNotExist(address owner) {
         require(!isOwner[owner], "MultiOwner: `owner` must not be owner");

@@ -12,6 +12,7 @@ contract Quorum is MultiOwner {
 
     // Mark as abstract contract
     constructor() internal {}
+    // solium-disable-previous-line no-empty-blocks
 
     // hasQuorum('replaceOwner', signatures, abi.encodePacked(oldOwner, newOwner))
     modifier hasQuorum(string memory operation, bytes[] memory signatures, bytes memory data) {
