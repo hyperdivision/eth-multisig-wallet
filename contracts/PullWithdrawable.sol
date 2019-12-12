@@ -34,7 +34,10 @@ contract PullWithdrawable {
         uint balance = withdrawals[msg.sender];
         require(amount <= balance, "PullWithdrawable: amount must be less than balance");
         withdrawals[msg.sender] -= amount;
-        msg.sender.transfer(amount);
+        // Owner can provide whatever gas stipend they want if ie. withdrawing
+        // to a smart contract
+        // solium-disable-next-line security/no-low-level-calls
+        msg.sender.call()(amount);
         emit Withdrawal(msg.sender, amount);
     }
 
@@ -42,7 +45,10 @@ contract PullWithdrawable {
         uint balance = withdrawals[msg.sender];
         require(0 < balance, "PullWithdrawable: no balance");
         withdrawals[msg.sender] = 0;
-        msg.sender.transfer(balance);
+        // Owner can provide whatever gas stipend they want if ie. withdrawing
+        // to a smart contract
+        // solium-disable-next-line security/no-low-level-calls
+        msg.sender.call()(balance);
         emit Withdrawal(msg.sender, balance);
     }
 
