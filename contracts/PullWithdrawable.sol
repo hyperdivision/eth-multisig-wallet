@@ -53,7 +53,8 @@ contract PullWithdrawable {
         // Owner can provide whatever gas stipend they want if ie. withdrawing
         // to a smart contract
         // solium-disable-next-line security/no-low-level-calls
-        recipient.call()(amount);
+        (bool success, ) = recipient.call.value(amount)("");
+        require(success, "PullWithdrawable: Transfer failed");
         emit Withdrawal(recipient, amount);
     }
 
@@ -81,7 +82,7 @@ contract PullWithdrawable {
         withdrawals[recipient] -= amount;
 
         bool success = erc20Contract.transfer(recipient, amount);
-        require(success, "Deposit: ERC20 transfer failed");
+        require(success, "PullWithdrawable: ERC20 transfer failed");
         emit WithdrawalERC20(ERC20Address, recipient, amount);
     }
 }
