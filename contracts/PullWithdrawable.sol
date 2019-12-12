@@ -31,47 +31,57 @@ contract PullWithdrawable {
     }
 
     function withdraw (uint amount) external {
-        uint balance = withdrawals[msg.sender];
-        require(amount <= balance, "PullWithdrawable: amount must be less than balance");
-        withdrawals[msg.sender] -= amount;
-        // Owner can provide whatever gas stipend they want if ie. withdrawing
-        // to a smart contract
-        // solium-disable-next-line security/no-low-level-calls
-        msg.sender.call()(amount);
-        emit Withdrawal(msg.sender, amount);
+        _withdraw(msg.sender, amount);
     }
 
     function withdraw () external {
-        uint balance = withdrawals[msg.sender];
-        require(0 < balance, "PullWithdrawable: no balance");
-        withdrawals[msg.sender] = 0;
+        _withdraw(msg.sender, withdrawals[msg.sender]);
+    }
+
+    function withdrawFrom (address payable from) external {
+        _withdraw(from, withdrawals[from]);
+    }
+
+    function withdrawFrom (address payable from, uint amount) external {
+        _withdraw(from, amount);
+    }
+
+    function _withdraw (address payable recipient, uint amount) internal {
+        uint balance = withdrawals[recipient];
+        require(amount <= balance, "PullWithdrawable: amount must be less than balance");
+        withdrawals[recipient] -= amount;
         // Owner can provide whatever gas stipend they want if ie. withdrawing
         // to a smart contract
         // solium-disable-next-line security/no-low-level-calls
-        msg.sender.call()(balance);
-        emit Withdrawal(msg.sender, balance);
+        recipient.call()(amount);
+        emit Withdrawal(recipient, amount);
     }
 
     function withdrawERC20 (address ERC20Address, uint amount) external {
-        uint balance = withdrawalsERC20[ERC20Address][msg.sender];
-        require(amount <= balance, "PullWithdrawable: amount must be less than balance");
-
-        IERC20 erc20Contract = IERC20(ERC20Address);
-        withdrawals[msg.sender] -= amount;
-
-        bool success = erc20Contract.transfer(msg.sender, amount);
-        require(success, "Deposit: ERC20 transfer failed");
-        emit WithdrawalERC20(ERC20Address, msg.sender, amount);
+        _withdrawERC20(msg.sender, ERC20Address, amount);
     }
 
     function withdrawERC20 (address ERC20Address) external {
-        uint balance = withdrawalsERC20[ERC20Address][msg.sender];
-        require(0 < balance, "PullWithdrawable: no balance");
-        IERC20 erc20Contract = IERC20(ERC20Address);
-        withdrawals[msg.sender] = 0;
+        _withdrawERC20(msg.sender, ERC20Address, withdrawalsERC20[ERC20Address][msg.sender]);
+    }
 
-        bool success = erc20Contract.transfer(msg.sender, balance);
+    function withdrawERC20From (address ERC20Address, address payable from) external {
+        _withdrawERC20(from, ERC20Address, withdrawalsERC20[ERC20Address][from]);
+    }
+
+    function withdrawERC20From (address ERC20Address, address payable from, uint amount) external {
+        _withdrawERC20(from, ERC20Address, amount);
+    }
+
+    function _withdrawERC20(address payable recipient, address ERC20Address, uint amount) internal {
+        uint balance = withdrawalsERC20[ERC20Address][recipient];
+        require(amount <= balance, "PullWithdrawable: amount must be less than balance");
+
+        IERC20 erc20Contract = IERC20(ERC20Address);
+        withdrawals[recipient] -= amount;
+
+        bool success = erc20Contract.transfer(recipient, amount);
         require(success, "Deposit: ERC20 transfer failed");
-        emit WithdrawalERC20(ERC20Address, msg.sender, balance);
+        emit WithdrawalERC20(ERC20Address, recipient, amount);
     }
 }
