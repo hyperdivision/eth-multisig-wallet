@@ -29,7 +29,7 @@ contract MultiOwner {
     }
 
     modifier minOwners(uint min) {
-        require(min >= owners.length, "MultiOwner: minOwners violated");
+        require(owners.length >= min, "MultiOwner: minOwners violated");
         _;
     }
 
@@ -74,18 +74,14 @@ contract MultiOwner {
 
     function _removeOwnerUnsafe (address owner) private returns (uint) {
         address lastOwner = owners[owners.length - 1];
-        for (uint i = 0; i < owners.length - 1; i++) {
+        for (uint i = 0; i < owners.length; i++) {
             if (owners[i] == owner) {
                 owners[i] = lastOwner;
+                owners.length -= 1;
                 break;
             }
         }
 
-        // Since addresses are value types, in the above we copy the data, so
-        // if we want to get rid of the "over end" item, we need to delete it
-        // before we decrement the length
-        delete owners[owners.length - 1];
-        owners.length -= 1;
         return owners.length;
     }
 
