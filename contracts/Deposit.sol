@@ -47,7 +47,8 @@ contract Deposit {
 
     function sweep () external {
         uint balance = address(this).balance;
-        trustedOwner.transfer(balance);
+        (bool success, ) = trustedOwner.call.value(balance)("");
+        require(success, "Deposit: Forward failed");
         emit DepositSweep(address(this), balance);
     }
 }
