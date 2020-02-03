@@ -1,8 +1,9 @@
 pragma solidity 0.5.12;
 
 import "./IERC20.sol";
+import "./IPullWithdrawable.sol";
 
-contract PullWithdrawable {
+contract PullWithdrawable is IPullWithdrawable {
     event Withdrawal(address indexed to, uint amount);
     event WithdrawalERC20(address indexed ERC20Address, address indexed to, uint amount);
 
@@ -30,19 +31,19 @@ contract PullWithdrawable {
         }
     }
 
-    function withdraw (uint amount) external {
+    function withdraw (uint amount) public {
         _withdraw(msg.sender, amount);
     }
 
-    function withdraw () external {
+    function withdraw () public {
         _withdraw(msg.sender, withdrawals[msg.sender]);
     }
 
-    function withdrawFrom (address payable from) external {
+    function withdrawFrom (address payable from) public {
         _withdraw(from, withdrawals[from]);
     }
 
-    function withdrawFrom (address payable from, uint amount) external {
+    function withdrawFrom (address payable from, uint amount) public {
         _withdraw(from, amount);
     }
 
@@ -52,25 +53,25 @@ contract PullWithdrawable {
         withdrawals[recipient] -= amount;
         // Owner can provide whatever gas stipend they want if ie. withdrawing
         // to a smart contract
-        // solium-disable-next-line security/no-low-level-calls
+        // solium-disable-next-line security/no-call-value
         (bool success, ) = recipient.call.value(amount)("");
         require(success, "PullWithdrawable: Transfer failed");
         emit Withdrawal(recipient, amount);
     }
 
-    function withdrawERC20 (address ERC20Address, uint amount) external {
+    function withdrawERC20 (address ERC20Address, uint amount) public {
         _withdrawERC20(msg.sender, ERC20Address, amount);
     }
 
-    function withdrawERC20 (address ERC20Address) external {
+    function withdrawERC20 (address ERC20Address) public {
         _withdrawERC20(msg.sender, ERC20Address, withdrawalsERC20[ERC20Address][msg.sender]);
     }
 
-    function withdrawERC20From (address ERC20Address, address payable from) external {
+    function withdrawERC20From (address ERC20Address, address payable from) public {
         _withdrawERC20(from, ERC20Address, withdrawalsERC20[ERC20Address][from]);
     }
 
-    function withdrawERC20From (address ERC20Address, address payable from, uint amount) external {
+    function withdrawERC20From (address ERC20Address, address payable from, uint amount) public {
         _withdrawERC20(from, ERC20Address, amount);
     }
 
