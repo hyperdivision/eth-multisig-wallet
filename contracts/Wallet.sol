@@ -25,49 +25,49 @@ contract Wallet is Quorum, PullWithdrawable {
         super.setQuorum("replaceOwner", replaceOwnerQuorum);
     }
 
-    function setQuorum (bytes[] calldata signatures, string calldata operation, uint32 minQuroum)
-        external
+    function setQuorum (bytes[] memory signatures, string memory operation, uint32 minQuroum)
+        public
         hasQuorum("setQuorum", signatures, abi.encodePacked("setQuorum", operation, minQuroum))
     {
         super.setQuorum(operation, minQuroum);
     }
 
-    function addOwner (bytes[] calldata signatures, address owner)
-        external
+    function addOwner (bytes[] memory signatures, address owner)
+        public
         hasQuorum("addOwner", signatures, abi.encodePacked("addOwner", owner))
         returns (uint)
     {
         return super.addOwner(owner);
     }
 
-    function removeOwner (bytes[] calldata signatures, address owner)
-        external
+    function removeOwner (bytes[] memory signatures, address owner)
+        public
         hasQuorum("removeOwner", signatures, abi.encodePacked("removeOwner", owner))
     {
         return super.removeOwner(owner);
     }
 
-    function replaceOwner (bytes[] calldata signatures, address oldOwner, address newOwner)
-        external
+    function replaceOwner (bytes[] memory signatures, address oldOwner, address newOwner)
+        public
         hasQuorum("replaceOwner", signatures, abi.encodePacked("replaceOwner", oldOwner, newOwner))
     {
         return super.replaceOwner(oldOwner, newOwner);
     }
 
-    function updateWithdrawals (bytes[] calldata signatures, address[] calldata recipients, uint[] calldata amounts)
-        external
+    function updateWithdrawals (bytes[] memory signatures, address[] memory recipients, uint[] memory amounts)
+        public
         hasQuorum("updateWithdrawals", signatures, abi.encodePacked("updateWithdrawals", recipients, amounts))
     {
         return super.updateWithdrawals(recipients, amounts);
     }
 
     function updateWithdrawalsERC20 (
-        bytes[] calldata signatures,
-        address[] calldata recipients,
-        address[] calldata ERC20Address,
-        uint[] calldata amounts
+        bytes[] memory signatures,
+        address[] memory recipients,
+        address[] memory ERC20Address,
+        uint[] memory amounts
     )
-        external
+        public
         hasQuorum("updateWithdrawalsERC20", signatures, abi.encodePacked("updateWithdrawalsERC20", recipients, ERC20Address, amounts))
     {
         return super.updateWithdrawalsERC20(recipients, ERC20Address, amounts);
