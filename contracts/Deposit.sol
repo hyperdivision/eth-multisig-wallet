@@ -23,7 +23,7 @@ contract Deposit {
         external
         payable
     {
-        require(msg.data.length == 0, "Wallet: fallback function does not take arguments");
+        require(msg.data.length == 0, "Deposit: fallback function does not take arguments");
         // Since we only forward to a trusted contract, and we want to forward
         // the gas stipend also
         // solium-disable-next-line security/no-call-value
@@ -41,14 +41,14 @@ contract Deposit {
         if (balance == 0) return;
 
         bool success = erc20Contract.transfer.gas(gasLimit)(trustedOwner, balance);
-        require(success, "Deposit: ERC20 transfer failed");
+        require(success, "Deposit: ERC20 sweep failed");
         emit DepositSweepERC20(ERC20Address, address(this), balance);
     }
 
     function sweep () external {
         uint balance = address(this).balance;
         (bool success, ) = trustedOwner.call.value(balance)("");
-        require(success, "Deposit: Forward failed");
+        require(success, "Deposit: Sweep failed");
         emit DepositSweep(address(this), balance);
     }
 }
