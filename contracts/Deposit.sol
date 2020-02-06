@@ -19,6 +19,13 @@ contract Deposit {
         trustedOwner = _trustedOwner;
     }
 
+    function replaceOwner (address payable newOwner) external {
+        require(msg.sender == trustedOwner, "Deposit: Only trustedOwner can replace themselves");
+        require(address(0) == newOwner, "Deposit: newOwner cannot be empty");
+
+        trustedOwner = newOwner;
+    }
+
     function ()
         external
         payable
