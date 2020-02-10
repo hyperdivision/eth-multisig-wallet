@@ -10,11 +10,27 @@ contract PullWithdrawable is IPullWithdrawable {
     mapping (address => uint) public withdrawals;
     mapping (address => mapping(address => uint)) public withdrawalsERC20;
 
-    // Mark as abstract contract
-    constructor () internal {}
-    // solium-disable-previous-line no-empty-blocks
+    address payable public trustedOwner;
 
-    function updateWithdrawals (address[] memory recipients, uint[] memory amounts) internal {
+    constructor (address payable _trustedOwner) public {
+        trustedOwner = _trustedOwner;
+    }
+
+    function init (address payable _trustedOwner) external {
+        require(address(0) == trustedOwner, "PullWithdrawable: init trustedOwner cannot be set");
+
+        trustedOwner = _trustedOwner;
+    }
+
+    function replaceOwner (address payable newOwner) external {
+        require(msg.sender == trustedOwner, "PullWithdrawable: Only trustedOwner can call this");
+        require(address(0) == newOwner, "PullWithdrawable: newOwner cannot be empty");
+
+        trustedOwner = newOwner;
+    }
+
+    function updateWithdrawals (address[] memory recipients, uint[] memory amounts) public {
+        require(msg.sender == trustedOwner, "PullWithdrawable: Only trustedOwner can call this");
         require(recipients.length > 0, "PullWithdrawable: recipients must be given");
         require(recipients.length == amounts.length, "PullWithdrawable: recipients must be same length as amounts");
         for(uint i = 0; i < recipients.length; i++) {
@@ -22,7 +38,8 @@ contract PullWithdrawable is IPullWithdrawable {
         }
     }
 
-    function updateWithdrawalsERC20 (address[] memory recipients, address[] memory ERC20Address, uint[] memory amounts) internal {
+    function updateWithdrawalsERC20 (address[] memory recipients, address[] memory ERC20Address, uint[] memory amounts) public {
+        require(msg.sender == trustedOwner, "PullWithdrawable: Only trustedOwner can call this");
         require(recipients.length > 0, "PullWithdrawable: recipients must be given");
         require(recipients.length == ERC20Address.length, "PullWithdrawable: recipients must be same length as ERC20Addresses");
         require(ERC20Address.length == amounts.length, "PullWithdrawable: ERC20Addresses must be same length as amounts");
