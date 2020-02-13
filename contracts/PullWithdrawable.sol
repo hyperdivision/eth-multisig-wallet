@@ -24,7 +24,7 @@ contract PullWithdrawable is IPullWithdrawable {
 
     function replaceOwner (address payable newOwner) external {
         require(msg.sender == trustedOwner, "PullWithdrawable: Only trustedOwner can call this");
-        require(address(0) == newOwner, "PullWithdrawable: newOwner cannot be empty");
+        require(address(0) != newOwner, "PullWithdrawable: newOwner cannot be empty");
 
         trustedOwner = newOwner;
     }
