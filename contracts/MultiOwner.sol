@@ -4,6 +4,10 @@ contract MultiOwner {
     mapping (address => bool) public isOwner;
     address[] public owners;
 
+    function allOwners () public view returns (address[] memory) {
+        return owners;
+    }
+
     // Mark as abstract contract
     constructor() internal {}
     // solium-disable-previous-line no-empty-blocks
