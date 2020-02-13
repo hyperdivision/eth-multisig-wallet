@@ -3,6 +3,7 @@ pragma experimental ABIEncoderV2;
 pragma experimental SMTChecker;
 
 import "./Quorum2.sol";
+import "./CodeHash.sol";
 
 contract QuorumOwners is Quorum2 {
     constructor (
@@ -78,6 +79,12 @@ contract QuorumOwners is Quorum2 {
             abi.encodePacked(address(this), "execute", destination, dstMethod),
             signatures,
             abi.encodePacked(address(this), "execute", destination, dstValue, dstGas, dstMethod, dstData)
+    function executeType (bytes[] memory signatures, address destination, bytes4 dstMethod, uint256 dstValue, uint256 dstGas, bytes memory dstData)
+        public
+        hasQuorum(
+            abi.encodePacked(address(this), "executeType", CodeHash.at(destination), dstMethod),
+            signatures,
+            abi.encodePacked(address(this), "executeType", destination, dstMethod, dstValue, dstGas, dstData)
         )
     {
         (bool success, ) = destination.call.gas(dstGas).value(dstValue)(abi.encodeWithSelector(dstMethod, dstData));
