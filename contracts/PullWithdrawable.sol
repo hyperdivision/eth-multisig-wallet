@@ -27,6 +27,7 @@ contract PullWithdrawable is IPullWithdrawable {
         require(msg.sender == trustedOwner, "PullWithdrawable: Only trustedOwner can call this");
         require(recipients.length > 0, "PullWithdrawable: recipients must be given");
         require(recipients.length == amounts.length, "PullWithdrawable: recipients must be same length as amounts");
+
         for(uint256 i = 0; i < recipients.length; i++) {
             withdrawals[recipients[i]] += amounts[i];
         }
@@ -37,6 +38,7 @@ contract PullWithdrawable is IPullWithdrawable {
         require(recipients.length > 0, "PullWithdrawable: recipients must be given");
         require(recipients.length == ERC20Address.length, "PullWithdrawable: recipients must be same length as ERC20Addresses");
         require(ERC20Address.length == amounts.length, "PullWithdrawable: ERC20Addresses must be same length as amounts");
+
         for(uint256 i = 0; i < recipients.length; i++) {
             withdrawalsERC20[ERC20Address[i]][recipients[i]] += amounts[i];
         }
