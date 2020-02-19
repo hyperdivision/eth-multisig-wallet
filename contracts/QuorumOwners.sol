@@ -81,7 +81,7 @@ contract QuorumOwners is Quorum2 {
             abi.encodePacked(address(this), "execute", destination, dstMethod, dstValue, dstGas, dstData)
         )
     {
-        (bool success, ) = destination.call.gas(dstGas).value(dstValue)(abi.encodeWithSelector(dstMethod, dstData));
+        (bool success, ) = destination.call.gas(dstGas).value(dstValue)(abi.encodePacked(dstMethod, dstData));
         require(success, "Wallet: Execute failed");
     }
 
@@ -93,7 +93,7 @@ contract QuorumOwners is Quorum2 {
             abi.encodePacked(address(this), "executeType", destination, dstMethod, dstValue, dstGas, dstData)
         )
     {
-        (bool success, ) = destination.call.gas(dstGas).value(dstValue)(abi.encodeWithSelector(dstMethod, dstData));
+        (bool success, ) = destination.call.gas(dstGas).value(dstValue)(abi.encodePacked(dstMethod, dstData));
         require(success, "Wallet: Execute failed");
     }
 
