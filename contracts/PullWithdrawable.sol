@@ -44,6 +44,28 @@ contract PullWithdrawable is IPullWithdrawable {
         }
     }
 
+    function getWithdrawalsBatch (address[] memory recipients) public view returns(uint256[] memory){
+        uint256[] memory result;
+
+        for(uint256 i = 0; i < recipients.length; i++) {
+            result[i] = withdrawals[recipients[i]];
+        }
+
+        return result;
+    }
+
+    function getWithdrawalsERC20Batch (address[] memory ERC20Address, address[] memory recipients) public view returns(uint256[] memory){
+        require(recipients.length == ERC20Address.length, "PullWithdrawable: recipients must be same length as ERC20Addresses");
+
+        uint256[] memory result;
+
+        for(uint256 i = 0; i < recipients.length; i++) {
+            result[i] = withdrawalsERC20[ERC20Address[i]][recipients[i]];
+        }
+
+        return result;
+    }
+
     function withdraw (uint256 amount) public {
         _withdraw(msg.sender, amount);
     }
