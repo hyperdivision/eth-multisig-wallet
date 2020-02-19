@@ -32,7 +32,7 @@ contract MultiOwner {
         _;
     }
 
-    modifier minOwners(uint min) {
+    modifier minOwners(uint256 min) {
         require(owners.length >= min, "MultiOwner: minOwners violated");
         _;
     }
@@ -41,9 +41,9 @@ contract MultiOwner {
         internal
         notNullAddress(owner)
         ownerDoesNotExist(owner)
-        returns (uint)
+        returns (uint256)
     {
-        uint n = _addOwnerUnsafe(owner);
+        uint256 n = _addOwnerUnsafe(owner);
         isOwner[owner] = true;
         return n;
     }
@@ -72,13 +72,13 @@ contract MultiOwner {
         isOwner[newOwner] = true;
     }
 
-    function _addOwnerUnsafe (address owner) private returns (uint) {
+    function _addOwnerUnsafe (address owner) private returns (uint256) {
         return owners.push(owner);
     }
 
-    function _removeOwnerUnsafe (address owner) private returns (uint) {
+    function _removeOwnerUnsafe (address owner) private returns (uint256) {
         address lastOwner = owners[owners.length - 1];
-        for (uint i = 0; i < owners.length; i++) {
+        for (uint256 i = 0; i < owners.length; i++) {
             if (owners[i] == owner) {
                 owners[i] = lastOwner;
                 owners.length -= 1;
@@ -89,8 +89,8 @@ contract MultiOwner {
         return owners.length;
     }
 
-    function _replaceOwnerUnsafe (address oldOwner, address newOwner) private returns (uint) {
-        for (uint i = 0; i < owners.length; i++) {
+    function _replaceOwnerUnsafe (address oldOwner, address newOwner) private returns (uint256) {
+        for (uint256 i = 0; i < owners.length; i++) {
             if (owners[i] == oldOwner) {
                 owners[i] = newOwner;
                 break;

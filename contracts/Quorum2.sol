@@ -5,9 +5,9 @@ import "./ECDSA.sol";
 import "./MultiOwner.sol";
 
 contract Quorum2 is MultiOwner {
-    uint public seq;
+    uint256 public seq;
 
-    mapping (bytes => uint) public quorum;
+    mapping (bytes => uint32) public quorum;
     uint32 constant QUORUM_PRECISION = 0xffffffff;
 
     // Mark as abstract contract
@@ -16,7 +16,7 @@ contract Quorum2 is MultiOwner {
 
     // hasQuorum('replaceOwner', signatures, abi.encodePacked(oldOwner, newOwner))
     modifier hasQuorum(bytes memory operation, bytes[] memory signatures, bytes memory data) {
-        uint minQuorum = quorum[operation];
+        uint32 minQuorum = quorum[operation];
         require(minQuorum > 0, "Quorum: minQuorum for operation must be greater than zero");
         require(signatures.length > 0, "Quorum: At least one signature must be given");
         require(signatures.length <= owners.length, "Quorum: Each owner can sign at most once");
@@ -25,9 +25,9 @@ contract Quorum2 is MultiOwner {
         // Strict larger than. This means 50% quorum on 2 people needs both to sign
         require(sigsQuorum > minQuorum, "Quorum: minQuroum number of signatures must be strictly greater");
 
-        uint i = 0; // signature index
-        uint j = 0; // owner index
-        uint v = 0; // verified counter
+        uint256 i = 0; // signature index
+        uint256 j = 0; // owner index
+        uint256 v = 0; // verified counter
         for (; i < signatures.length; i++) {
             address signer = verify(data, signatures[i]);
             require(isOwner[signer], "Quorum: invalid signature (perhaps invalid signer or wrong data)");
@@ -73,7 +73,7 @@ contract Quorum2 is MultiOwner {
         return signer;
     }
 
-    function _verify (bytes memory signature, uint currentSeq, address addr, bytes memory data)
+    function _verify (bytes memory signature, uint256 currentSeq, address addr, bytes memory data)
         private
         isSignatureLength(signature)
         notNullData(data)
