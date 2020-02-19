@@ -29,7 +29,7 @@ contract Quorum2 is MultiOwner {
         uint256 j = 0; // owner index
         uint256 v = 0; // verified counter
         for (; i < signatures.length; i++) {
-            address signer = verify(data, signatures[i]);
+            address signer = verify(signatures[i], data);
             require(isOwner[signer], "Quorum: invalid signature (perhaps invalid signer or wrong data)");
             while (j < owners.length) {
                 if (signer != owners[j]) j++;
@@ -65,7 +65,7 @@ contract Quorum2 is MultiOwner {
         quorum[operation] = minQuroum;
     }
 
-    function verify (bytes memory data, bytes memory signature) public view returns(address) {
+    function verify (bytes memory signature, bytes memory data) public view returns(address) {
         address signer = _verify(signature, seq, address(this), data);
 
         require(signer != address(0), "Quorum: invalid signature");
