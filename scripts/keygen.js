@@ -78,5 +78,6 @@ const address = digest.slice(-20)
 
 fs.writeFileSync(privateKeyPath, privKey)
 
+if (args.print) console.log('Private key: ', privKey.toString('hex'))
 console.log('Public key:', pubKey.toString('hex'))
 console.log('Address:', '0x' + toChecksumAddress(address.toString('hex')))
