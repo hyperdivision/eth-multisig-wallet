@@ -4,7 +4,7 @@ import "./CloneFactory.sol";
 import "./Deposit.sol";
 
 contract DepositFactory is CloneFactory {
-    event Deployed(address payable at);
+    event Deployed(address payable indexed at);
     address public templateAddress;
 
     constructor (address _templateAddress) public {
