@@ -8,16 +8,18 @@ contract Deposit {
     event DepositSweepERC20(address indexed ERC20Address, address indexed to, uint256 amount);
 
     address public trustedOwner;
-    address payable public recipient;
+    address public recipient;
 
-    constructor (address _trustedOwner, address payable _recipient) public {
+    constructor (address _trustedOwner, address _recipient) public {
         trustedOwner = _trustedOwner;
         recipient = _recipient;
     }
 
-    function init (address _trustedOwner, address payable _recipient) external {
-        require(address(0) == _trustedOwner, "Deposit: init trustedOwner cannot be set");
-        require(address(0) == _recipient, "Deposit: init recipient cannot be set");
+    function init (address _trustedOwner, address _recipient) public {
+        require(address(0) == trustedOwner, "Deposit: init trustedOwner cannot be set");
+        require(address(0) == recipient, "Deposit: init recipient cannot be set");
+        require(address(0) != _trustedOwner, "Deposit: init trustedOwner cannot be set");
+        require(address(0) != _recipient, "Deposit: init recipient cannot be set");
 
         trustedOwner = _trustedOwner;
         recipient = _recipient;
@@ -30,7 +32,7 @@ contract Deposit {
         trustedOwner = newOwner;
     }
 
-    function replaceRecipient (address payable newRecipient) external {
+    function replaceRecipient (address newRecipient) external {
         require(msg.sender == trustedOwner, "Deposit: Only trustedOwner can replace recipient");
         require(address(0) != newRecipient, "Deposit: newRecipient cannot be empty");
 
