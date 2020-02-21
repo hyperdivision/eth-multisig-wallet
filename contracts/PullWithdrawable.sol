@@ -13,10 +13,13 @@ contract PullWithdrawable is IPullWithdrawable {
     address payable public trustedOwner;
 
     constructor (address payable _trustedOwner) public {
+        require(address(0) != _trustedOwner, "PullWithdrawable: cannot be null address");
         trustedOwner = _trustedOwner;
     }
 
-    function() external payable { }
+    function() external payable {
+        require(msg.data.length == 0, "Deposit: fallback function does not take arguments");
+    }
 
     function replaceOwner (address payable newOwner) external {
         require(msg.sender == trustedOwner, "PullWithdrawable: Only trustedOwner can call this");
@@ -85,6 +88,8 @@ contract PullWithdrawable is IPullWithdrawable {
     }
 
     function _withdraw (address payable recipient, uint256 amount) internal {
+        require(address(0) != from, "PullWithdrawable: cannot be null address");
+        require(amount > 0, "PullWithdrawable: amount must be greater than 0");
         uint256 balance = withdrawals[recipient];
         require(amount <= balance, "PullWithdrawable: amount must be less than balance");
         withdrawals[recipient] -= amount;
@@ -113,6 +118,9 @@ contract PullWithdrawable is IPullWithdrawable {
     }
 
     function _withdrawERC20(address payable recipient, address ERC20Address, uint256 amount) internal {
+        require(address(0) != from, "PullWithdrawable: cannot be null address");
+        require(address(0) != ERC20Address, "PullWithdrawable: cannot be null contract");
+        require(amount > 0, "PullWithdrawable: amount must be greater than 0");
         uint256 balance = withdrawalsERC20[ERC20Address][recipient];
         require(amount <= balance, "PullWithdrawable: amount must be less than balance");
 
