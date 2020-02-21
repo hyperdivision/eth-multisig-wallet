@@ -1,3 +1,5 @@
+pragma solidity ^0.5.0;
+
 interface IPullWithdrawable {
     event Withdrawal(address indexed to, uint256 amount);
     event WithdrawalERC20(address indexed ERC20Address, address indexed to, uint256 amount);

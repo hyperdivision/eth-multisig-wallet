@@ -85,8 +85,14 @@ contract QuorumOwners is Quorum {
         require(success, "Wallet: Execute failed");
     }
 
-    function executeType (bytes[] memory signatures, address destination, bytes4 dstMethod, uint256 dstValue, uint256 dstGas, bytes memory dstData)
-        public
+    function executeType (
+        bytes[] memory signatures,
+        address destination,
+        bytes4 dstMethod,
+        uint256 dstValue,
+        uint256 dstGas,
+        bytes memory dstData
+    ) public
         hasQuorum(
             abi.encodePacked(address(this), "executeType", CodeHash.at(destination), dstMethod),
             signatures,

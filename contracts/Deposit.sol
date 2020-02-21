@@ -67,6 +67,7 @@ contract Deposit {
 
     function sweep () external {
         uint256 balance = address(this).balance;
+        // solium-disable-next-line security/no-call-value
         (bool success, ) = recipient.call.value(balance)("");
         require(success, "Deposit: Sweep failed");
         emit DepositSweep(recipient, balance);
