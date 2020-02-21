@@ -19,6 +19,7 @@ contract MultiOwnerConcrete is MultiOwner {
     function outOfBounds (uint index) public view returns (address) {
         address res;
 
+        // solium-disable-next-line security/no-inline-assembly
         assembly {
             // 0x00 is scratch space for hash functions
             mstore(0x00, add(owners_slot, mul(index, 32)))
