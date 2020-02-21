@@ -2,10 +2,10 @@ pragma solidity 0.5.12;
 pragma experimental ABIEncoderV2;
 pragma experimental SMTChecker;
 
-import "./Quorum2.sol";
+import "./Quorum.sol";
 import "./CodeHash.sol";
 
-contract QuorumOwners is Quorum2 {
+contract QuorumOwners is Quorum {
     constructor (
         address[] memory initialOwners,
         uint32 setQuorumQuorum,
