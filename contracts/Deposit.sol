@@ -44,6 +44,7 @@ contract Deposit {
         payable
     {
         require(msg.data.length == 0, "Deposit: fallback function does not take arguments");
+        require(msg.value > 0, "Deposit: fallback function must have value");
         // Since we only forward to a trusted contract, and we want to forward
         // the gas stipend also
         // solium-disable-next-line security/no-call-value
@@ -57,8 +58,7 @@ contract Deposit {
 
         address self = address(this);
         uint256 balance = erc20Contract.balanceOf(self);
-
-        if (balance == 0) return;
+        require(balance > 0, "Deposit: Cannot sweepERC20 empty");
 
         bool success = erc20Contract.transfer.gas(gasLimit)(recipient, balance);
         require(success, "Deposit: ERC20 sweep failed");
@@ -67,6 +67,7 @@ contract Deposit {
 
     function sweep () external {
         uint256 balance = address(this).balance;
+        require(balance > 0, "Deposit: Cannot sweep empty");
         // solium-disable-next-line security/no-call-value
         (bool success, ) = recipient.call.value(balance)("");
         require(success, "Deposit: Sweep failed");
