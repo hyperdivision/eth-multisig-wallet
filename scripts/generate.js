@@ -50,7 +50,7 @@ async function sendTransaction (opts) {
 ;(async () => {
   const user = (await eth.accounts())[0]
 
-  var owner = contract('QuorumOwner ' + QuorumOwners.codehash, user, async function (user) {
+  var owner = contract('QuorumOwners ' + QuorumOwners.codehash, user, async function (user) {
     const quorumOwnerTx = await sendTransaction({
       from: user,
       data: '0x' + QuorumOwners.constructorEncode([
@@ -89,7 +89,9 @@ async function sendTransaction (opts) {
     const depositFactoryTx = await sendTransaction({
       from: user,
       data: '0x' + DepositFactory.constructorEncode(
-        deposit.querySelector('input').value
+        deposit.querySelector('input').value,
+        owner.querySelector('input').value,
+        wallet.querySelector('input').value
       ).toString('hex')
     })
 
@@ -101,8 +103,6 @@ async function sendTransaction (opts) {
       from: user,
       to: depositFactory.querySelector('input').value,
       data: '0x' + DepositFactory.createEncode(
-        owner.querySelector('input').value,
-        wallet.querySelector('input').value,
         '0x' + window.prompt('Salt')
       ).toString('hex')
     })
