@@ -73,16 +73,16 @@ contract QuorumOwners is Quorum {
         return super.replaceOwner(oldOwner, newOwner);
     }
 
-    function execute (bytes[] memory signatures, address destination, bytes4 dstMethod, uint256 dstValue, uint256 dstGas, bytes memory dstData)
+    function execute (bytes[] memory signatures, address destination, bytes4 dstMethod, uint256 dstValue, bytes memory dstData)
         public
         hasQuorum(
             abi.encodePacked(address(this), "execute", destination, dstMethod),
             signatures,
-            abi.encodePacked(address(this), "execute", destination, dstMethod, dstValue, dstGas, dstData)
+            abi.encodePacked(address(this), "execute", destination, dstMethod, dstValue, dstData)
         )
     {
-        (bool success, ) = destination.call.gas(dstGas).value(dstValue)(abi.encodePacked(dstMethod, dstData));
-        require(success, "Wallet: Execute failed");
+        (bool success, bytes memory returnData) = destination.call.value(dstValue)(abi.encodePacked(dstMethod, dstData));
+        require(success, string(returnData));
     }
 
     function executeType (
@@ -90,17 +90,17 @@ contract QuorumOwners is Quorum {
         address destination,
         bytes4 dstMethod,
         uint256 dstValue,
-        uint256 dstGas,
+
         bytes memory dstData
     ) public
         hasQuorum(
             abi.encodePacked(address(this), "executeType", CodeHash.at(destination), dstMethod),
             signatures,
-            abi.encodePacked(address(this), "executeType", destination, dstMethod, dstValue, dstGas, dstData)
+            abi.encodePacked(address(this), "executeType", destination, dstMethod, dstValue, dstData)
         )
     {
-        (bool success, ) = destination.call.gas(dstGas).value(dstValue)(abi.encodePacked(dstMethod, dstData));
-        require(success, "Wallet: Execute failed");
+        (bool success, bytes memory returnData) = destination.call.value(dstValue)(abi.encodePacked(dstMethod, dstData));
+        require(success, string(returnData));
     }
 
     function () external payable {
