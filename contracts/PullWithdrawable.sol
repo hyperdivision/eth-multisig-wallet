@@ -49,7 +49,7 @@ contract PullWithdrawable is IPullWithdrawable {
         }
     }
 
-    function getWithdrawalsBatch (address[] memory recipients) public view returns(uint256[] memory){
+    function getWithdrawalsBatch (address[] memory recipients) public view returns(uint256[] memory) {
         uint256[] memory result;
 
         for(uint256 i = 0; i < recipients.length; i++) {
@@ -59,7 +59,7 @@ contract PullWithdrawable is IPullWithdrawable {
         return result;
     }
 
-    function getWithdrawalsERC20Batch (address[] memory ERC20Address, address[] memory recipients) public view returns(uint256[] memory){
+    function getWithdrawalsERC20Batch (address[] memory ERC20Address, address[] memory recipients) public view returns(uint256[] memory) {
         require(recipients.length == ERC20Address.length, "PullWithdrawable: recipients must be same length as ERC20Addresses");
 
         uint256[] memory result;
@@ -88,7 +88,7 @@ contract PullWithdrawable is IPullWithdrawable {
     }
 
     function _withdraw (address payable recipient, uint256 amount) internal {
-        require(address(0) != from, "PullWithdrawable: cannot be null address");
+        require(address(0) != recipient, "PullWithdrawable: cannot be null address");
         require(amount > 0, "PullWithdrawable: amount must be greater than 0");
         uint256 balance = withdrawals[recipient];
         require(amount <= balance, "PullWithdrawable: amount must be less than balance");
@@ -118,7 +118,7 @@ contract PullWithdrawable is IPullWithdrawable {
     }
 
     function _withdrawERC20(address payable recipient, address ERC20Address, uint256 amount) internal {
-        require(address(0) != from, "PullWithdrawable: cannot be null address");
+        require(address(0) != recipient, "PullWithdrawable: cannot be null address");
         require(address(0) != ERC20Address, "PullWithdrawable: cannot be null contract");
         require(amount > 0, "PullWithdrawable: amount must be greater than 0");
         uint256 balance = withdrawalsERC20[ERC20Address][recipient];
