@@ -1,5 +1,5 @@
 /* global artifacts, contract, it, assert */
-const Wallet = artifacts.require('Wallet')
+const QuorumOwner = artifacts.require('QuorumOwner')
 
 const keygen = require('../../lib/keygen')
 const quorum = require('../../lib/quorum-calc')
@@ -10,7 +10,7 @@ contract('2nd Auth test', async accounts => {
     const keypair = keygen()
     const keypair2 = keygen()
 
-    const instance = await Wallet.new([toAddress(keypair.address)], quorum(0.5), quorum(0.5), quorum(0.5), quorum(0.5))
+    const instance = await QuorumOwner.new([toAddress(keypair.address)], quorum(0.5), quorum(0.5), quorum(0.5), quorum(0.5))
 
     assert(await instance.isOwner.call(toAddress(keypair.address)) === true)
     assert(await instance.isOwner.call(toAddress(keypair2.address)) === false)
