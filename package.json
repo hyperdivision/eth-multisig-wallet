@@ -1,7 +1,7 @@
 {
   "name": "@hyperdivision/eth-multisig-wallet",
   "version": "0.0.0",
-  "description": "",
+  "description": "Ethereum Multisig Wallet",
   "main": "index.js",
   "publishConfig": {
     "access": "public"
