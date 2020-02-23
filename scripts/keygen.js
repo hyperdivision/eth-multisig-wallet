@@ -5,6 +5,8 @@ const secp256k1 = require('secp256k1')
 const hash = require('keccak')
 const fs = require('fs')
 const path = require('path')
+const eff = require('eff-diceware-passphrase')
+const sodium = require('sodium-native')
 
 function toChecksumAddress (address) {
   const addr = address.toString('hex')
@@ -60,13 +62,15 @@ if (!args['private-key']) {
 
 const privateKeyPath = path.resolve(process.cwd(), args['private-key'])
 let privKey
+let words
 try {
   fs.accessSync(privateKeyPath)
   console.error('Cowardly refusing to overwrite private key. Will print corresponding public key and address instead')
   privKey = fs.readFileSync(privateKeyPath)
 } catch (_) {
   do {
-    privKey = crypto.randomBytes(32)
+    words = eff.entropy(256)
+    privKey = hashPass(words.join(' '))
   } while (!secp256k1.privateKeyVerify(privKey))
 }
 
@@ -78,6 +82,19 @@ const address = digest.slice(-20)
 
 fs.writeFileSync(privateKeyPath, privKey)
 
+if (words) console.log('Words: ', words.join(' '))
 if (args.print) console.log('Private key: ', privKey.toString('hex'))
 console.log('Public key:', pubKey.toString('hex'))
 console.log('Address:', '0x' + toChecksumAddress(address.toString('hex')))
+
+function hashPass (passphrase) {
+  const key = sodium.sodium_malloc(32)
+  const password = Buffer.from(passphrase)
+  const salt = Buffer.alloc(sodium.crypto_pwhash_SALTBYTES, 0xdb)
+  const opslimit = sodium.crypto_pwhash_OPSLIMIT_MODERATE
+  const memlimit = sodium.crypto_pwhash_MEMLIMIT_MODERATE
+  const algorithm = sodium.crypto_pwhash_ALG_DEFAULT
+  sodium.crypto_pwhash(key, password, salt, opslimit, memlimit, algorithm)
+
+  return key
+}
