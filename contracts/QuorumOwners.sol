@@ -81,6 +81,7 @@ contract QuorumOwners is Quorum {
             abi.encodePacked(address(this), "execute", destination, dstMethod, dstValue, dstData)
         )
     {
+        // solium-disable-next-line security/no-call-value
         (bool success, bytes memory returnData) = destination.call.value(dstValue)(abi.encodePacked(dstMethod, dstData));
         require(success, string(returnData));
     }
@@ -99,6 +100,7 @@ contract QuorumOwners is Quorum {
             abi.encodePacked(address(this), "executeType", destination, dstMethod, dstValue, dstData)
         )
     {
+        // solium-disable-next-line security/no-call-value
         (bool success, bytes memory returnData) = destination.call.value(dstValue)(abi.encodePacked(dstMethod, dstData));
         require(success, string(returnData));
     }
