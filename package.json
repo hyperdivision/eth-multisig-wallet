@@ -25,7 +25,8 @@
   },
   "scripts": {
     "pretest": "solium --dir contracts",
-    "test": "tape test.js"
+    "test": "tape test.js",
+    "version": "truffle build"
   },
   "repository": {
     "type": "git",
