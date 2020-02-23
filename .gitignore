@@ -1,2 +1,6 @@
-build
+/build/contracts/*
+!/build/contracts/QuorumOwners.json
+!/build/contracts/Deposit.json
+!/build/contracts/DepositFactory.json
+!/build/contracts/PullWithdrawable.json
 mcore*
