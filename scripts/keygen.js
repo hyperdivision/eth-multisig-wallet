@@ -7,22 +7,7 @@ const fs = require('fs')
 const path = require('path')
 const eff = require('eff-diceware-passphrase')
 const sodium = require('sodium-native')
-
-function toChecksumAddress (address) {
-  const addr = address.toString('hex')
-  var ret = ''
-  const h = hash('keccak256').update(address).digest('hex')
-
-  for (var i = 0; i < addr.length; i++) {
-    if (parseInt(h[i], 16) >= 8) {
-      ret += addr[i].toUpperCase()
-    } else {
-      ret += addr[i]
-    }
-  }
-
-  return ret
-}
+const toChecksumAddress = require('../lib/checksum-address')
 
 const args = require('minimist')(process.argv.slice(2), {
   alias: {
@@ -85,7 +70,7 @@ fs.writeFileSync(privateKeyPath, privKey)
 if (words) console.log('Words: ', words.join(' '))
 if (args.print) console.log('Private key: ', privKey.toString('hex'))
 console.log('Public key:', pubKey.toString('hex'))
-console.log('Address:', '0x' + toChecksumAddress(address.toString('hex')))
+console.log('Address:', toChecksumAddress(address.toString('hex')))
 
 function hashPass (passphrase) {
   const key = sodium.sodium_malloc(32)
