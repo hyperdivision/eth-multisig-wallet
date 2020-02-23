@@ -5,7 +5,7 @@ module.exports = async (cb) => {
     const user = (await web3.eth.getAccounts())[0]
     const dest = '0x0000000000000000000001000000000000000000'
 
-    const deployDepo = Deposit.createEncode(user, dest)
+    const deployDepo = Deposit.constructorEncode(user, dest)
     const d = await web3.eth.sendTransaction({
       from: user,
       gasLimit: 1e7,
@@ -28,8 +28,6 @@ module.exports = async (cb) => {
       gasLimit: 1e7,
       data: '0x' + Deposit.recipientEncode().toString('hex')
     }))
-
-    console.log(Deposit.replaceRecipientEncode(user).toString('hex'))
 
     console.log(await web3.eth.sendTransaction({
       to: addr,
