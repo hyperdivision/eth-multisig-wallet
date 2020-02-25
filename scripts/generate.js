@@ -186,17 +186,19 @@ async function sendTransaction (opts) {
   })
 
   var quorom = method('Quorum for updateWithdrawals', user, async function (user) {
-    console.log(wallet.querySelector('input').value)
     return QuorumOwners.quorumDecode(await eth.call({
-      to: wallet.querySelector('input').value,
+      to: owner.querySelector('input').value,
       data: format(QuorumOwners.quorumEncode(
         QuorumOwners.setQuorumExternalProposeOperationEncode(
-          wallet.querySelector('input').value,
-          'updateWithdrawals',
-          PullWithdrawable.typeSignatures.updateWithdrawals
+          owner.querySelector('input').value,
+          [
+            wallet.querySelector('input').value,
+            'updateWithdrawals',
+            PullWithdrawable.typeSignatures.updateWithdrawals
+          ]
         )
       ))
-    }))
+    })) / 0xffffffff
   })
 
   var setWithdrawQuroum = method('Set withdraw quorum', user, async function (user, quorum) {
