@@ -43,8 +43,6 @@ contract Deposit {
         external
         payable
     {
-        require(msg.data.length == 0, "Deposit: fallback function does not take arguments");
-        require(msg.value > 0, "Deposit: fallback function must have value");
         // Since we only forward to a trusted contract, and we want to forward
         // the gas stipend also
         // solium-disable-next-line security/no-call-value
