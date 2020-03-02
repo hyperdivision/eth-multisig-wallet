@@ -32,7 +32,9 @@ contract DepositFactory is CloneFactory {
 
     function create(uint256 salt) external returns(address) {
         address payable spawned = super.create2Clone(templateAddress, salt);
-        Deposit(spawned).init(trustedOwner, recipient);
+        Deposit c = Deposit(spawned);
+        c.init(trustedOwner, recipient);
+        c.sweep();
         emit Deployed(spawned);
     }
 }
