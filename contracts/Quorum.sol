@@ -25,12 +25,12 @@ contract Quorum is MultiOwner {
         // Strict larger than. This means 50% quorum on 2 people needs both to sign
         require(sigsQuorum >= minQuorum, "Quorum: minQuroum number of signatures must be strictly greater");
 
-        bytes32 hash = _hash(seq, address(this), data);
+        bytes32 hash = hash(seq, address(this), data);
         uint256 i = 0; // signature index
         uint256 j = 0; // owner index
         uint256 v = 0; // verified counter
         for (; i < signatures.length; i++) {
-            address signer = verify(signatures[i], hash);
+            address signer = _verify(signatures[i], hash);
             require(isOwner[signer], "Quorum: invalid signature (perhaps invalid signer or wrong data)");
             while (j < owners.length) {
                 if (signer != owners[j]) j++;
@@ -66,16 +66,16 @@ contract Quorum is MultiOwner {
         quorum[operation] = minQuroum;
     }
 
-    function verify (bytes memory signature, bytes32 hash) public view returns(address) {
-        address signer = _verify(signature, hash);
+    function verify (bytes memory signature, bytes memory data) public view returns(address) {
+        address signer = _verify(signature, hash(seq, address(this), data));
 
         require(signer != address(0), "Quorum: invalid signature");
 
         return signer;
     }
 
-    function _hash (uint256 currentSeq, address addr, bytes memory data)
-        private
+    function hash (uint256 currentSeq, address addr, bytes memory data)
+        public
         notNullData(data)
         pure
         returns (bytes32)
