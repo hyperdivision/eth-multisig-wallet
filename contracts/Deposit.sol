@@ -55,11 +55,10 @@ contract Deposit {
         IERC20 erc20Contract = IERC20(ERC20Address);
 
         address self = address(this);
-        uint256 balance = erc20Contract.balanceOf(self);
+        uint256 balance = erc20Contract.balanceOf.gas(gasLimit)(self);
         require(balance > 0, "Deposit: Cannot sweepERC20 empty");
 
-        bool success = erc20Contract.transfer.gas(gasLimit)(recipient, balance);
-        require(success, "Deposit: ERC20 sweep failed");
+        erc20Contract.transfer.gas(gasLimit)(recipient, balance);
         emit DepositSweepERC20(ERC20Address, recipient, balance);
     }
 

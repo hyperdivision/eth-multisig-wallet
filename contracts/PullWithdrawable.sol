@@ -127,8 +127,7 @@ contract PullWithdrawable is IPullWithdrawable {
         IERC20 erc20Contract = IERC20(ERC20Address);
         withdrawals[recipient] -= amount;
 
-        bool success = erc20Contract.transfer(recipient, amount);
-        require(success, "PullWithdrawable: ERC20 transfer failed");
+        erc20Contract.transfer(recipient, amount);
         emit WithdrawalERC20(ERC20Address, recipient, amount);
     }
 }
