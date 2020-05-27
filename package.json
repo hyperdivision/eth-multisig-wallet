@@ -8,20 +8,19 @@
   },
   "dependencies": {
     "eff-diceware-passphrase": "^2.0.1",
-    "ethereumjs-abi": "^0.6.8",
-    "keccak": "^2.1.0",
+    "eth-serde": "0.0.7",
+    "eth-sign": "^0.3.4",
     "nanoassert": "^2.0.0",
-    "nanoeth": "^2.0.1",
-    "secp256k1": "^3.7.1",
-    "sodium-native": "^3.0.0",
-    "web3-eth-abi": "^1.2.6"
+    "sodium-native": "^3.0.0"
   },
   "devDependencies": {
     "budo": "^11.6.3",
     "ethlint": "^1.2.5",
+    "parity-binary": "^1.0.3",
+    "parity-spawn": "^1.0.0",
+    "solc": "0.5.12",
     "standard": "^14.3.1",
-    "tape": "^4.11.0",
-    "truffle": "^5.1.2"
+    "tape-parity": "^1.0.0"
   },
   "scripts": {
     "pretest": "solium --dir contracts",
