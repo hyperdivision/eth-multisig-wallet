@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "eff-diceware-passphrase": "^2.0.1",
-    "eth-serde": "0.0.7",
+    "eth-serde": "0.0.10",
     "eth-sign": "^0.3.4",
     "nanoassert": "^2.0.0",
     "sodium-native": "^3.0.0"
