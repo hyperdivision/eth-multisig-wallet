@@ -12,6 +12,7 @@
     "eth-sign": "^0.3.4",
     "nanoassert": "^2.0.0",
     "secp256k1-native": "^1.1.1",
+    "sha3-wasm": "0.0.7",
     "sodium-native": "^3.0.0"
   },
   "devDependencies": {
