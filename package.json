@@ -16,11 +16,13 @@
   "devDependencies": {
     "budo": "^11.6.3",
     "ethlint": "^1.2.5",
+    "minimist": "^1.2.5",
     "parity-binary": "^1.0.3",
     "parity-spawn": "^1.0.0",
     "solc": "0.5.12",
     "standard": "^14.3.1",
-    "tape-parity": "^1.0.0"
+    "tape-parity": "^1.0.0",
+    "which": "^2.0.2"
   },
   "scripts": {
     "pretest": "solium --dir contracts",

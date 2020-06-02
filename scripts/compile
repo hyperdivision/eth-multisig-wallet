@@ -1,0 +1,100 @@
+#! /usr/bin/env node
+const { exec } = require('child_process')
+const which = require('which')
+const path = require('path')
+const fs = require('fs')
+
+const args = require('minimist')(process.argv.slice(2), {
+  default: {
+    q: false,
+    h: false
+  },
+  string: [
+    'output-dir',
+    'source-dir',
+    'config'
+  ],
+  boolean: [
+    'quiet',
+    'help'
+  ],
+  alias: {
+    q: 'quiet',
+    o: 'output-dir',
+    s: 'source-dir',
+    c: 'config',
+    h: 'help'
+  }
+})
+
+if (args.h) {
+  console.error(`solc compiler script
+
+USAGE
+
+  compile --config=solidity.json --source-dir=./contracts --output-dir=./build
+
+OPTIONS
+
+  -q, --quiet        Do not print errors and warnings
+  -c, --config       Path to Solidity standard json
+  -o, --output-dir   Path to output directory
+  -s, --source-dir   Path to source directory
+  -h, --help         Print this help message
+`)
+  process.exit(1)
+}
+
+const sourceDir = path.resolve(args.s)
+const outputDir = path.resolve(args.o)
+const configPath = path.resolve(args.c)
+
+try {
+  var solc = which.sync('solc')
+} catch {
+  console.error('Could not find "solc" in PATH')
+  process.exit(2)
+}
+
+try {
+  var config = fs.readFileSync(configPath)
+} catch {
+  console.error(`Could not load config from "${configPath}"`)
+  process.exit(3)
+}
+
+exec(`"${solc}" --standard-json --allow-paths "${sourceDir}"`, {
+  cwd: sourceDir,
+  maxBuffer: 1024 * 1024 * 120
+}, (err, stdout, stderr) => {
+  if (err) throw err
+
+  const output = JSON.parse(stdout.toString())
+  if (args.q !== true) {
+    output.errors.forEach(err => {
+      formatError(err)
+    })
+  }
+
+  fs.mkdirSync(outputDir, { recursive: true })
+  for (const [fileName, contract] of Object.entries(output.contracts)) {
+    for (var [contractName, contractData] of Object.entries(contract)) {
+      fs.writeFileSync(path.join(outputDir, contractName + '.json'), JSON.stringify({
+        fileName,
+        contractName,
+        abi: contractData.abi,
+        metadata: contractData.metadata,
+        bytecode: '0x' + contractData.evm.bytecode.object,
+        sourceMap: '0x' + contractData.evm.bytecode.sourceMap,
+        deployedBytecode: '0x' + contractData.evm.deployedBytecode.object,
+        deployedSourceMap: '0x' + contractData.evm.deployedBytecode.sourceMap,
+        methodIdentifiers: contractData.evm.methodIdentifiers,
+        gasEstimates: contractData.evm.gasEstimates
+      }, null, 2))
+    }
+  }
+}).stdin.end(config)
+
+function formatError (err) {
+  console.error(err.formattedMessage)
+}
