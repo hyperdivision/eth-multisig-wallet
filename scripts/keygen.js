@@ -1,13 +1,10 @@
 #!/usr/bin/env node
-
-const crypto = require('crypto')
-const secp256k1 = require('secp256k1')
-const hash = require('keccak')
 const fs = require('fs')
 const path = require('path')
 const eff = require('eff-diceware-passphrase')
 const sodium = require('sodium-native')
 const toChecksumAddress = require('../lib/checksum-address')
+const keygen = require('../lib/keygen')
 
 const args = require('minimist')(process.argv.slice(2), {
   alias: {
@@ -53,17 +50,12 @@ try {
   console.error('Cowardly refusing to overwrite private key. Will print corresponding public key and address instead')
   privKey = fs.readFileSync(privateKeyPath)
 } catch (_) {
-  do {
-    words = eff.entropy(256)
-    privKey = hashPass(words.join(' '))
-  } while (!secp256k1.privateKeyVerify(privKey))
+  words = eff.entropy(256)
+  privKey = hashPass(words.join(' '))
 }
 
 // get the public key in a compressed format
-const pubKey = secp256k1.publicKeyCreate(privKey, false)
-
-const digest = hash('keccak256').update(pubKey.slice(1)).digest()
-const address = digest.slice(-20)
+const { publicKey: pubKey, address } = keygen(privKey)
 
 fs.writeFileSync(privateKeyPath, privKey)
 
