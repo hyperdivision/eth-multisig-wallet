@@ -27,7 +27,9 @@
   "scripts": {
     "pretest": "solium --dir contracts",
     "test": "tape test.js",
-    "version": "truffle build && git add build/contracts"
+    "compile": "scripts/compile --config=solidity.json --source-dir=contracts --output-dir=build",
+    "compile-test": "scripts/compile --config=solidity-test.json --source-dir=contracts --output-dir=build",
+    "version": "npm run compile && git add build/contracts"
   },
   "repository": {
     "type": "git",

@@ -1,6 +1,6 @@
-/build/contracts/*
-!/build/contracts/QuorumOwners.json
-!/build/contracts/Deposit.json
-!/build/contracts/DepositFactory.json
-!/build/contracts/PullWithdrawable.json
+/build/*
+!/build/QuorumOwners.json
+!/build/Deposit.json
+!/build/DepositFactory.json
+!/build/PullWithdrawable.json
 mcore*
