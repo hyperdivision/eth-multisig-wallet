@@ -1,0 +1,47 @@
+{
+  "language": "Solidity",
+  "sources":
+  {
+    "QuorumOwners.sol": {
+      "urls": [
+        "./QuorumOwners.sol"
+      ]
+    },
+    "DepositFactory.sol": {
+      "urls": [
+        "./DepositFactory.sol"
+      ]
+    },
+    "Deposit.sol": {
+      "urls": [
+        "./Deposit.sol"
+      ]
+    },
+    "PullWithdrawable.sol": {
+      "urls": [
+        "./PullWithdrawable.sol"
+      ]
+    }
+  },
+  "settings":
+  {
+    "optimizer": {
+      "enabled": false
+    },
+    "evmVersion": "constantinople",
+    "outputSelection": {
+      "*": {
+        "*": [
+          "metadata",
+          "evm.bytecode",
+          "evm.bytecode.sourceMap",
+          "abi",
+          "evm.deployedBytecode",
+          "evm.deployedBytecode.sourceMap",
+          "evm.methodIdentifiers",
+          "evm.gasEstimates"
+        ]
+      }
+    }
+  }
+}

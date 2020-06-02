@@ -1,0 +1,112 @@
+{
+  "language": "Solidity",
+  "sources":
+  {
+    "QuorumOwners.sol": {
+      "urls": [
+        "./QuorumOwners.sol"
+      ]
+    },
+    "DepositFactory.sol": {
+      "urls": [
+        "./DepositFactory.sol"
+      ]
+    },
+    "Deposit.sol": {
+      "urls": [
+        "./Deposit.sol"
+      ]
+    },
+    "PullWithdrawable.sol": {
+      "urls": [
+        "./PullWithdrawable.sol"
+      ]
+    },
+    "tests/BadERC20.sol": {
+      "urls": [
+        "./tests/BadERC20.sol"
+      ]
+    },
+    "tests/Controller.sol": {
+      "urls": [
+        "./tests/Controller.sol"
+      ]
+    },
+    "tests/GasMiningERC20.sol": {
+      "urls": [
+        "./tests/GasMiningERC20.sol"
+      ]
+    },
+    "tests/GasMiningPayable.sol": {
+      "urls": [
+        "./tests/GasMiningPayable.sol"
+      ]
+    },
+    "tests/GoodERC20.sol": {
+      "urls": [
+        "./tests/GoodERC20.sol"
+      ]
+    },
+    "tests/GoodRecipient.sol": {
+      "urls": [
+        "./tests/GoodRecipient.sol"
+      ]
+    },
+    "tests/Inspect.sol": {
+      "urls": [
+        "./tests/Inspect.sol"
+      ]
+    },
+    "tests/MultiOwnerConcrete.sol": {
+      "urls": [
+        "./tests/MultiOwnerConcrete.sol"
+      ]
+    },
+    "tests/NonPayableRecipient.sol": {
+      "urls": [
+        "./tests/NonPayableRecipient.sol"
+      ]
+    },
+    "tests/PullWithdrawableConcrete.sol": {
+      "urls": [
+        "./tests/PullWithdrawableConcrete.sol"
+      ]
+    },
+    "language-tests/FunctionCalldata.sol": {
+      "urls": [
+        "./language-tests/FunctionCalldata.sol"
+      ]
+    },
+    "language-tests/ModifierCalldata.sol": {
+      "urls": [
+        "./language-tests/ModifierCalldata.sol"
+      ]
+    },
+    "language-tests/OutOfGas.sol": {
+      "urls": [
+        "./language-tests/OutOfGas.sol"
+      ]
+    }
+  },
+  "settings":
+  {
+    "optimizer": {
+      "enabled": false
+    },
+    "evmVersion": "constantinople",
+    "outputSelection": {
+      "*": {
+        "*": [
+          "metadata",
+          "evm.bytecode",
+          "evm.bytecode.sourceMap",
+          "abi",
+          "evm.deployedBytecode",
+          "evm.deployedBytecode.sourceMap",
+          "evm.methodIdentifiers",
+          "evm.gasEstimates"
+        ]
+      }
+    }
+  }
+}
