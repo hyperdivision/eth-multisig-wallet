@@ -1,4 +1,4 @@
-pragma solidity 0.5.12;
+pragma solidity ^0.5.12;
 
 library CodeHash {
     function at (address c) internal view returns (bytes32) {
