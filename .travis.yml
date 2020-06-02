@@ -19,8 +19,10 @@ jobs:
             - python3.8-distutils
             - python3.8-dev
       before_install:
+        - curl -L https://github.com/ethereum/solidity/releases/download/v0.5.17/solc-static-linux -o ./solc
+        - echo 'c35ce7a4d3ffa5747c178b1e24c8541b2e5d8a82c1db3719eb4433a1f19e16f3  solc' | sha256sum --check
         - curl https://bootstrap.pypa.io/get-pip.py -o- | sudo python3.8
         - sudo pip3 install slither-analyzer
 
       script:
-        - slither . || true
+        - PATH=".:$PATH" slither . || true
