@@ -1,0 +1,112 @@
+#! /usr/bin/env node
+const path = require('path')
+const fs = require('fs')
+const evmOpcodes = require('evm-opcodes')
+
+const args = require('minimist')(process.argv.slice(2), {
+  default: {
+    h: false
+  },
+  string: [
+    'contract-json',
+    'source-dir',
+    'trace-json'
+  ],
+  boolean: [
+    'help'
+  ],
+  alias: {
+    c: 'contract-json',
+    t: 'trace-json',
+    s: 'source-dir',
+    h: 'help'
+  }
+})
+
+if (args.h) {
+  console.error(`sourcemap to Parity trace mapper
+
+USAGE
+
+  sourcemap --contract=Deposit.json --source-dir=./contracts --trace=trace.json
+
+OPTIONS
+
+  -c, --contract-json Path to the JSON specification for the contract
+  -s, --source-dir    Path to contract source directory
+  -t, --trace-json    Path to JSON trace from parity_trace(tx, ['vmTrace'])
+  -h, --help          Show this help message
+`)
+  process.exit(1)
+}
+
+const contractPath = path.resolve(args.c)
+const tracePath = path.resolve(args.t)
+const source = path.resolve(args.s)
+
+const trace = require(tracePath)
+const contract = require(contractPath)
+
+const opcodes = new Map(evmOpcodes.map(o => [o.opcode, o]))
+
+var files = contract.sources.map(f => fs.readFileSync(path.resolve(source, f)))
+
+const isPush = inst => inst >= 0x60 && inst < 0x7f
+const pushDataLength = inst => inst - 0x5f
+const instructionLength = inst => (isPush(inst) ? 1 + pushDataLength(inst) : 1)
+
+const byteToInstIndex = bytecode => {
+  const result = []
+  let byteIndex = 0
+  let instIndex = 0
+  while (byteIndex < bytecode.length) {
+    const length = instructionLength(bytecode[byteIndex])
+    for (let i = 0; i < length; i += 1) {
+      result.push(instIndex)
+    }
+    byteIndex += length
+    instIndex += 1
+  }
+  return result
+}
+
+const bytecode = Buffer.from(contract.deployedBytecode.slice(2), 'hex')
+const instructionMapping = byteToInstIndex(bytecode)
+
+const tokens = contract.deployedSourceMap.split(';')
+var last = {
+  offset: null,
+  length: null,
+  file: null,
+  jump: null,
+  modifierDepth: null
+}
+
+const parsed = []
+for (var i = 0; i < tokens.length; i++) {
+  const [s, l, f, j, m] = tokens[i].split(':')
+  const next = {
+    offset: Number(s || last.offset),
+    length: Number(l || last.length),
+    file: Number(f || last.file),
+    jump: j || last.jump,
+    modifierDepth: Number(m || last.modifierDepth)
+  }
+
+  parsed.push(next)
+
+  last = next
+}
+
+const sc = trace.vmTrace.ops.map(op => {
+  const bytePosition = instructionMapping[op.pc]
+  const sourceMapping = parsed[bytePosition]
+  const instruction = opcodes.get(bytecode[op.pc])
+  const instructionByteLength = instructionLength(instruction.opcode)
+  if (sourceMapping == null) return { op, bytePosition, instruction, instructionByteLength }
+  if (files[sourceMapping.file] == null) return { op, bytePosition, instruction, instructionByteLength, sourceMapping, source: 'Internal' }
+
+  return { op, bytePosition, instruction, instructionByteLength, sourceMapping, source: files[sourceMapping.file].slice(sourceMapping.offset, sourceMapping.offset + sourceMapping.length).toString() }
+})
+
+console.dir(sc, { color: true, depth: null, maxArrayLength: null })

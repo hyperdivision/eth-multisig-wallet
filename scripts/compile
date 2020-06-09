@@ -85,13 +85,14 @@ exec(`"${solc}" --standard-json --allow-paths "${sourceDir}"`, {
         fileName,
         contractName,
         abi: contractData.abi,
-        metadata: contractData.metadata,
+        metadata: JSON.parse(contractData.metadata),
         bytecode: '0x' + contractData.evm.bytecode.object,
-        sourceMap: '0x' + contractData.evm.bytecode.sourceMap,
+        sourceMap: contractData.evm.bytecode.sourceMap,
         deployedBytecode: '0x' + contractData.evm.deployedBytecode.object,
-        deployedSourceMap: '0x' + contractData.evm.deployedBytecode.sourceMap,
+        deployedSourceMap: contractData.evm.deployedBytecode.sourceMap,
         methodIdentifiers: contractData.evm.methodIdentifiers,
-        gasEstimates: contractData.evm.gasEstimates
+        gasEstimates: contractData.evm.gasEstimates,
+        sources: Object.keys(output.sources)
       }, null, 2))
     }
   }
