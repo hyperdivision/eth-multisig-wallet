@@ -106,15 +106,34 @@ for (var i = 0; i < tokens.length; i++) {
   last = next
 }
 
+const stack = []
+const memory = Buffer.alloc(2 ** 16)
+
 const sc = trace.vmTrace.ops.map(op => {
   const bytePosition = instructionMapping[op.pc]
   const sourceMapping = parsed[bytePosition]
   const instruction = opcodes.get(bytecode[op.pc])
   const instructionByteLength = instructionLength(instruction.opcode)
-  if (sourceMapping == null) return { op, bytePosition, instruction, instructionByteLength }
-  if (files[sourceMapping.file] == null) return { op, bytePosition, instruction, instructionByteLength, sourceMapping, file: 'Internal', source: null }
 
-  return { op, bytePosition, instruction, instructionByteLength, file: contract.sources[sourceMapping.file], sourceMapping, source: files[sourceMapping.file].slice(sourceMapping.offset, sourceMapping.offset + sourceMapping.length).toString() }
+  if (instruction.mnemonic === 'REVERT') {
+    const offset = Number(stack[1]) + 68
+    const length = Number(stack[0])
+
+    var err = memory.subarray(offset, offset + length - 68).toString()
+  }
+
+  var plen = instruction.inputs.length
+  while (plen-- >= 0) stack.pop()
+  for (const item of op.ex.push) stack.push(item)
+
+  if (op.ex.mem) {
+    memory.set(Buffer.from(op.ex.mem.data.slice(2), 'hex'), op.ex.mem.off)
+  }
+
+  if (sourceMapping == null) return { err, op, bytePosition, instruction, instructionByteLength }
+  if (files[sourceMapping.file] == null) return { err, op, bytePosition, instruction, instructionByteLength, sourceMapping, file: 'Internal', source: null }
+
+  return { err, op, bytePosition, instruction, instructionByteLength, stack: stack.slice(), file: contract.sources[sourceMapping.file], sourceMapping, source: files[sourceMapping.file].slice(sourceMapping.offset, sourceMapping.offset + sourceMapping.length).toString() }
 })
 
 console.log(JSON.stringify(sc, null, args.p ? 2 : 0))
