@@ -50,6 +50,11 @@ const source = path.resolve(args.s)
 const trace = require(tracePath)
 const contract = require(contractPath)
 
+if (trace.vmTrace.code !== contract.deployedBytecode) {
+  console.error('Trace bytecode does not match Contract bytecode')
+  process.exit(1)
+}
+
 const opcodes = new Map(evmOpcodes.map(o => [o.opcode, o]))
 
 var files = contract.sources.map(f => fs.readFileSync(path.resolve(source, f)))
