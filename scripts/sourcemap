@@ -115,25 +115,27 @@ const sc = trace.vmTrace.ops.map(op => {
   const instruction = opcodes.get(bytecode[op.pc])
   const instructionByteLength = instructionLength(instruction.opcode)
 
-  if (instruction.mnemonic === 'REVERT') {
+  if (['REVERT', 'RETURN'].include(instruction.mnemonic)) {
     const offset = Number(stack[1]) + 68
     const length = Number(stack[0])
 
-    var err = memory.subarray(offset, offset + length - 68).toString()
+    var message = memory.subarray(offset, offset + length - 68).toString()
   }
 
+  const before = stack.slice()
   var plen = instruction.inputs.length
   while (plen-- >= 0) stack.pop()
-  for (const item of op.ex.push) stack.push(item)
+  stack.push(...op.ex.push)
+  const after = stack.slice()
 
   if (op.ex.mem) {
     memory.set(Buffer.from(op.ex.mem.data.slice(2), 'hex'), op.ex.mem.off)
   }
 
-  if (sourceMapping == null) return { err, op, bytePosition, instruction, instructionByteLength }
-  if (files[sourceMapping.file] == null) return { err, op, bytePosition, instruction, instructionByteLength, sourceMapping, file: 'Internal', source: null }
+  if (sourceMapping == null) return { message, op, before, after, bytePosition, instruction, instructionByteLength }
+  if (files[sourceMapping.file] == null) return { message, op, before, after, bytePosition, instruction, instructionByteLength, sourceMapping, file: 'Internal', source: null }
 
-  return { err, op, bytePosition, instruction, instructionByteLength, stack: stack.slice(), file: contract.sources[sourceMapping.file], sourceMapping, source: files[sourceMapping.file].slice(sourceMapping.offset, sourceMapping.offset + sourceMapping.length).toString() }
+  return { message, op, bytePosition, instruction, instructionByteLength, before, after, file: contract.sources[sourceMapping.file], sourceMapping, source: files[sourceMapping.file].slice(sourceMapping.offset, sourceMapping.offset + sourceMapping.length).toString() }
 })
 
 console.log(JSON.stringify(sc, null, args.p ? 2 : 0))
