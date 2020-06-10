@@ -5,7 +5,8 @@ const evmOpcodes = require('evm-opcodes')
 
 const args = require('minimist')(process.argv.slice(2), {
   default: {
-    h: false
+    h: false,
+    p: true
   },
   string: [
     'contract-json',
@@ -13,7 +14,8 @@ const args = require('minimist')(process.argv.slice(2), {
     'trace-json'
   ],
   boolean: [
-    'help'
+    'help',
+    'pretty'
   ],
   alias: {
     c: 'contract-json',
@@ -35,6 +37,7 @@ OPTIONS
   -c, --contract-json Path to the JSON specification for the contract
   -s, --source-dir    Path to contract source directory
   -t, --trace-json    Path to JSON trace from parity_trace(tx, ['vmTrace'])
+  -p, --pretty        Pretty print output
   -h, --help          Show this help message
 `)
   process.exit(1)
@@ -109,4 +112,4 @@ const sc = trace.vmTrace.ops.map(op => {
   return { op, bytePosition, instruction, instructionByteLength, sourceMapping, source: files[sourceMapping.file].slice(sourceMapping.offset, sourceMapping.offset + sourceMapping.length).toString() }
 })
 
-console.dir(sc, { color: true, depth: null, maxArrayLength: null })
+console.log(JSON.stringify(sc, null, args.p ? 2 : 0))
