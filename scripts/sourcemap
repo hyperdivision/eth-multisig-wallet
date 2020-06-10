@@ -112,9 +112,9 @@ const sc = trace.vmTrace.ops.map(op => {
   const instruction = opcodes.get(bytecode[op.pc])
   const instructionByteLength = instructionLength(instruction.opcode)
   if (sourceMapping == null) return { op, bytePosition, instruction, instructionByteLength }
-  if (files[sourceMapping.file] == null) return { op, bytePosition, instruction, instructionByteLength, sourceMapping, source: 'Internal' }
+  if (files[sourceMapping.file] == null) return { op, bytePosition, instruction, instructionByteLength, sourceMapping, file: 'Internal', source: null }
 
-  return { op, bytePosition, instruction, instructionByteLength, sourceMapping, source: files[sourceMapping.file].slice(sourceMapping.offset, sourceMapping.offset + sourceMapping.length).toString() }
+  return { op, bytePosition, instruction, instructionByteLength, file: contract.sources[sourceMapping.file], sourceMapping, source: files[sourceMapping.file].slice(sourceMapping.offset, sourceMapping.offset + sourceMapping.length).toString() }
 })
 
 console.log(JSON.stringify(sc, null, args.p ? 2 : 0))
