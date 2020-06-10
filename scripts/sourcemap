@@ -57,7 +57,8 @@ if (trace.vmTrace.code !== contract.deployedBytecode) {
 
 const opcodes = new Map(evmOpcodes.map(o => [o.opcode, o]))
 
-var files = contract.sources.map(f => fs.readFileSync(path.resolve(source, f)))
+contract.sources = contract.sources.map(f => path.resolve(source, f))
+var files = contract.sources.map(f => fs.readFileSync(f))
 
 const isPush = inst => inst >= 0x60 && inst < 0x7f
 const pushDataLength = inst => inst - 0x5f
