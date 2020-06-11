@@ -2,6 +2,7 @@ const test = require('tape-parity')
 const signer = require('eth-sign')
 const keygen = require('../lib/keygen.js')
 const QuorumOwners = require('../lib/quorum-owners-api.js')
+const fs = require('fs')
 
 test('basic', async t => {
   const keys = keygen()
@@ -12,7 +13,6 @@ test('basic', async t => {
 })
 
 test('quorum owners', async t => {
-  var count = 0
   const eoa = keygen()
   const user = keygen()
 
@@ -28,19 +28,13 @@ test('quorum owners', async t => {
   })
 
   const c = await t.mined(txHash)
+  const qo = new QuorumOwners(c.contractAddress, t.eth)
 
-  const [ owners ] = QuorumOwners.allOwnersDecode(await t.eth.call({
-    to: c.contractAddress,
-    gasPrice: format(1),
-    gas: format(1e6),
-    data: format(QuorumOwners.allOwnersEncode())
-  }))
-
-  t.same(owners, [ user.address.toLowerCase() ])
+  const owners = await qo.owners()
+  t.same(owners, [user.address.toLowerCase()])
 })
 
-test('set new quorum owners', async t => {
-  var count = 0
+test.only('set new quorum owners', async t => {
   const user = keygen()
   const eoa = keygen()
   const user2 = keygen()
@@ -57,43 +51,30 @@ test('set new quorum owners', async t => {
   })
 
   const c = await t.mined(txHash)
+  const qo = new QuorumOwners(c.contractAddress, t.eth)
 
-  const [ owners ] = QuorumOwners.allOwnersDecode(await t.eth.call({
-    to: c.contractAddress,
-    gasPrice: format(1),
-    gas: format(1e6),
-    data: format(QuorumOwners.allOwnersEncode())
-  }))
+  const owners = await qo.owners()
+  t.same(owners, [user.address.toLowerCase()])
 
-  t.same(owners, [ user.address.toLowerCase() ])
+  const proposal = await qo.addOwner(user2.address)
 
-  const proposal = QuorumOwners.addOwnerPropose(c.contractAddress, 0, user2.address)
-  const signedProposal = QuorumOwners.sign(proposal, user)
-  const combined = QuorumOwners.combine(owners, proposal, [ signedProposal ])
-
+  const sig = QuorumOwners.sign(proposal, user)
+  const combined = await qo.combine(proposal, [sig])
   const data = QuorumOwners.addOwnerEncode(...combined.args)
 
   const txHash2 = await sendTx(t.eth, {
     from: eoa,
     to: c.contractAddress,
     data: data
-  })
+  }, true)
 
-  const c2 = await t.mined(txHash2)
+  await t.mined(txHash2)
+  const newOwners = await qo.owners()
 
-  const [ newOwners ] = QuorumOwners.allOwnersDecode(await t.eth.call({
-    to: c.contractAddress,
-    gasPrice: format(1),
-    gas: format(1e6),
-    data: format(QuorumOwners.allOwnersEncode())
-  }))
-
-  t.same(newOwners, [ user.address.toLowerCase(), user2.address.toLowerCase() ])
+  t.same(newOwners, [user.address.toLowerCase(), user2.address.toLowerCase()])
 })
-
 
 test('remove old quorum owners', async t => {
-  var count = 0
   const user = keygen()
   const eoa = keygen()
   const user2 = keygen()
@@ -110,94 +91,14 @@ test('remove old quorum owners', async t => {
   })
 
   const c = await t.mined(txHash)
+  const qo = new QuorumOwners(c.contractAddress, t.eth)
 
-  const [ owners ] = QuorumOwners.allOwnersDecode(await t.eth.call({
-    to: c.contractAddress,
-    gasPrice: format(1),
-    gas: format(1e6),
-    data: format(QuorumOwners.allOwnersEncode())
-  }))
+  const owners = await qo.owners()
+  t.same(owners, [user.address.toLowerCase()])
 
-  t.same(owners, [ user.address.toLowerCase() ])
-
-  const addProposal = QuorumOwners.addOwnerPropose(c.contractAddress, 0, user2.address)
+  const addProposal = await qo.addOwner(user2.address)
   const signedProposal = QuorumOwners.sign(addProposal, user)
-  const addCombined = QuorumOwners.combine(owners, addProposal, [ signedProposal ])
-
-  const addData = QuorumOwners.addOwnerEncode(...addCombined.args)
-  const txHash2 = await sendTx(t.eth, {
-    from: eoa,
-    to: c.contractAddress,
-    data: addData
-  })
-
-  const c2 = await t.mined(txHash2)
-
-  const [ newOwners ] = QuorumOwners.allOwnersDecode(await t.eth.call({
-    to: c.contractAddress,
-    gasPrice: format(1),
-    gas: format(1e6),
-    data: format(QuorumOwners.allOwnersEncode())
-  }))
-
-  t.same(newOwners, [ user.address.toLowerCase(), user2.address.toLowerCase() ])  
-
-  const removeProposal = QuorumOwners.removeOwnerPropose(c.contractAddress, 1, user.address)
-  const sig = QuorumOwners.sign(removeProposal, user)
-  const sig2 = QuorumOwners.sign(removeProposal, user2)
-  const removeCombined = QuorumOwners.combine(newOwners, removeProposal, [ sig, sig2 ])
-
-  const removeData = QuorumOwners.removeOwnerEncode(...removeCombined.args)
-
-  const txHash3 = await sendTx(t.eth, {
-    from: eoa,
-    to: c.contractAddress,
-    data: removeData
-  })
-
-  const c3 = await t.mined(txHash3)
-
-  const [ finalOwners ] = QuorumOwners.allOwnersDecode(await t.eth.call({
-    to: c.contractAddress,
-    gasPrice: format(1),
-    gas: format(1e6),
-    data: format(QuorumOwners.allOwnersEncode())
-  }))
-
-  t.same(finalOwners, [ user2.address.toLowerCase() ])
-})
-
-test('remove and readd original quorum owner', async t => {
-  var count = 0
-  const user = keygen()
-  const eoa = keygen()
-  const user2 = keygen()
-
-  await t.fund(eoa.address, 1e18)
-
-  const deployOrg = QuorumOwners.constructorEncode([
-    user.address.toLowerCase()
-  ])
-
-  const txHash = await sendTx(t.eth, {
-    from: eoa,
-    data: deployOrg
-  })
-
-  const c = await t.mined(txHash)
-
-  const [ owners ] = QuorumOwners.allOwnersDecode(await t.eth.call({
-    to: c.contractAddress,
-    gasPrice: format(1),
-    gas: format(1e6),
-    data: format(QuorumOwners.allOwnersEncode())
-  }))
-
-  t.same(owners, [ user.address.toLowerCase() ])
-
-  const addProposal = QuorumOwners.addOwnerPropose(c.contractAddress, count++, user2.address)
-  const signedProposal = QuorumOwners.sign(addProposal, user)
-  const addCombined = QuorumOwners.combine(owners, addProposal, [ signedProposal ])
+  const addCombined = await qo.combine(addProposal, [signedProposal])
 
   const addData = QuorumOwners.addOwnerEncode(...addCombined.args)
   const txHash2 = await sendTx(t.eth, {
@@ -208,19 +109,71 @@ test('remove and readd original quorum owner', async t => {
 
   await t.mined(txHash2)
 
-  const [ newOwners ] = QuorumOwners.allOwnersDecode(await t.eth.call({
-    to: c.contractAddress,
-    gasPrice: format(1),
-    gas: format(1e6),
-    data: format(QuorumOwners.allOwnersEncode())
-  }))
+  const newOwners = await qo.owners()
+  t.same(newOwners, [user.address.toLowerCase(), user2.address.toLowerCase()])
 
-  t.same(newOwners, [ user.address.toLowerCase(), user2.address.toLowerCase() ])  
-
-  const removeProposal = QuorumOwners.removeOwnerPropose(c.contractAddress, count++, user.address)
+  const removeProposal = await qo.removeOwner(user.address)
   const sig = QuorumOwners.sign(removeProposal, user)
   const sig2 = QuorumOwners.sign(removeProposal, user2)
-  const removeCombined = QuorumOwners.combine(newOwners, removeProposal, [ sig, sig2 ])
+  const removeCombined = await qo.combine(removeProposal, [sig, sig2])
+
+  const removeData = QuorumOwners.removeOwnerEncode(...removeCombined.args)
+
+  const txHash3 = await sendTx(t.eth, {
+    from: eoa,
+    to: c.contractAddress,
+    data: removeData
+  })
+
+  await t.mined(txHash3)
+
+  const finalOwners = await qo.owners()
+
+  t.same(finalOwners, [user2.address.toLowerCase()])
+})
+
+test('remove and readd original quorum owner', async t => {
+  const user = keygen()
+  const eoa = keygen()
+  const user2 = keygen()
+
+  await t.fund(eoa.address, 1e18)
+
+  const deployOrg = QuorumOwners.constructorEncode([
+    user.address.toLowerCase()
+  ])
+
+  const txHash = await sendTx(t.eth, {
+    from: eoa,
+    data: deployOrg
+  })
+
+  const c = await t.mined(txHash)
+  const qo = new QuorumOwners(c.contractAddress, t.eth)
+  const owners = await qo.owners()
+
+  t.same(owners, [user.address.toLowerCase()])
+
+  const addProposal = await qo.addOwner(user2.address)
+  const signedProposal = QuorumOwners.sign(addProposal, user)
+  const addCombined = await qo.combine(addProposal, [signedProposal])
+
+  const addData = QuorumOwners.addOwnerEncode(...addCombined.args)
+  const txHash2 = await sendTx(t.eth, {
+    from: eoa,
+    to: c.contractAddress,
+    data: addData
+  })
+
+  await t.mined(txHash2)
+
+  const newOwners = await qo.owners()
+  t.same(newOwners, [user.address.toLowerCase(), user2.address.toLowerCase()])
+
+  const removeProposal = await qo.removeOwner(user.address)
+  const sig = QuorumOwners.sign(removeProposal, user)
+  const sig2 = QuorumOwners.sign(removeProposal, user2)
+  const removeCombined = await qo.combine(removeProposal, [sig, sig2])
 
   const removeData = QuorumOwners.removeOwnerEncode(...removeCombined.args)
   const txHash3 = await sendTx(t.eth, {
@@ -231,42 +184,29 @@ test('remove and readd original quorum owner', async t => {
 
   await t.mined(txHash3)
 
-  const [ finalOwners ] = QuorumOwners.allOwnersDecode(await t.eth.call({
-    to: c.contractAddress,
-    gasPrice: format(1),
-    gas: format(1e6),
-    data: format(QuorumOwners.allOwnersEncode())
-  }))
+  const finalOwners = await qo.owners()
+  t.same(finalOwners, [user2.address.toLowerCase()])
 
-  t.same(finalOwners, [ user2.address.toLowerCase() ])
-
-  const readdProposal = QuorumOwners.addOwnerPropose(c.contractAddress, count++, user.address)
+  const readdProposal = await qo.addOwner(user.address)
   const resignedProposal = QuorumOwners.sign(readdProposal, user2)
-  const readdCombined = QuorumOwners.combine(finalOwners, readdProposal, [ resignedProposal ])
+  const readdCombined = await qo.combine(readdProposal, [resignedProposal])
 
   const readdData = QuorumOwners.addOwnerEncode(...readdCombined.args)
   const txHash4 = await sendTx(t.eth, {
     from: eoa,
     to: c.contractAddress,
     data: readdData
-  }, true)
+  })
 
   await t.mined(txHash4)
 
-  const [ readdOwners ] = QuorumOwners.allOwnersDecode(await t.eth.call({
-    to: c.contractAddress,
-    gasPrice: format(1),
-    gas: format(1e6),
-    data: format(QuorumOwners.allOwnersEncode())
-  }))
-
-  t.same(readdOwners, [ user2.address.toLowerCase(), user.address.toLowerCase() ])  
+  const readdOwners = await qo.owners()
+  t.same(readdOwners, [user2.address.toLowerCase(), user.address.toLowerCase()])
 
   t.end()
 })
 
 test('replace original quorum owner', async t => {
-  var count = 0
   const eoa = keygen()
 
   const user = keygen()
@@ -289,21 +229,16 @@ test('replace original quorum owner', async t => {
   })
 
   const c = await t.mined(txHash)
+  const qo = new QuorumOwners(c.contractAddress, t.eth)
 
-  const [ owners ] = QuorumOwners.allOwnersDecode(await t.eth.call({
-    to: c.contractAddress,
-    gasPrice: format(1),
-    gas: format(1e6),
-    data: format(QuorumOwners.allOwnersEncode())
-  }))
+  const owners = await qo.owners()
+  t.same(owners, [user, user2, user3].map(a => a.address.toLowerCase()))
 
-  t.same(owners, [ user.address, user2.address, user3.address ].map(a => a.toLowerCase()))
-
-  const addProposal = QuorumOwners.addOwnerPropose(c.contractAddress, count++, user4.address)
+  const addProposal = await qo.addOwner(user4.address)
   const sig1 = QuorumOwners.sign(addProposal, user)
   const sig2 = QuorumOwners.sign(addProposal, user2)
   const sig3 = QuorumOwners.sign(addProposal, user3)
-  const addCombined = QuorumOwners.combine(owners, addProposal, [ sig1, sig2, sig3 ])
+  const addCombined = await qo.combine(addProposal, [sig1, sig2, sig3])
 
   const addData = QuorumOwners.addOwnerEncode(...addCombined.args)
   const txHash2 = await sendTx(t.eth, {
@@ -314,21 +249,15 @@ test('replace original quorum owner', async t => {
 
   await t.mined(txHash2)
 
-  const [ newOwners ] = QuorumOwners.allOwnersDecode(await t.eth.call({
-    to: c.contractAddress,
-    gasPrice: format(1),
-    gas: format(1e6),
-    data: format(QuorumOwners.allOwnersEncode())
-  }))
+  const newOwners = await qo.owners()
+  t.same(newOwners, [user, user2, user3, user4].map(a => a.address.toLowerCase()))
 
-  t.same(newOwners, [ user.address, user2.address, user3.address, user4.address ].map(a => a.toLowerCase()))
-
-  const replaceProposal = QuorumOwners.replaceOwnerPropose(c.contractAddress, count++, user4.address, user5.address)
+  const replaceProposal = await qo.replaceOwner([user4.address, user5.address])
   const replaceSig = QuorumOwners.sign(replaceProposal, user)
   const replaceSig2 = QuorumOwners.sign(replaceProposal, user2)
   const replaceSig3 = QuorumOwners.sign(replaceProposal, user3)
   const replaceSig4 = QuorumOwners.sign(replaceProposal, user4)
-  const replaceCombined = QuorumOwners.combine(newOwners, replaceProposal, [ replaceSig, replaceSig2, replaceSig3, replaceSig4 ])
+  const replaceCombined = await qo.combine(replaceProposal, [replaceSig, replaceSig2, replaceSig3, replaceSig4])
 
   const replaceData = QuorumOwners.replaceOwnerEncode(...replaceCombined.args)
   const txHash3 = await sendTx(t.eth, {
@@ -337,22 +266,14 @@ test('replace original quorum owner', async t => {
     data: replaceData
   })
 
-  const c2 = await t.mined(txHash3)
+  await t.mined(txHash3)
 
-  const [ finalOwners ] = QuorumOwners.allOwnersDecode(await t.eth.call({
-    to: c.contractAddress,
-    gasPrice: format(1),
-    gas: format(1e6),
-    data: format(QuorumOwners.allOwnersEncode())
-  }))
-
-  t.same(finalOwners, [ user.address, user2.address, user3.address, user5.address ].map(a => a.toLowerCase()))
+  const finalOwners = await qo.owners()
+  t.same(finalOwners, [user, user2, user3, user5].map(a => a.address.toLowerCase()))
   t.end()
 })
 
-test.only('replace original quorum owner', async t => {
-  var count = 0
-
+test('replace original quorum owner', async t => {
   const eoa = keygen()
   const user = keygen()
   const user2 = keygen()
@@ -360,11 +281,8 @@ test.only('replace original quorum owner', async t => {
 
   await t.fund(eoa.address, 1e18)
 
-  const deployOrg = QuorumOwners.constructorEncode([
-    user.address.toLowerCase(),
-    user2.address.toLowerCase(),
-    user3.address.toLowerCase()
-  ])
+  const deployOrg = QuorumOwners.constructorEncode(
+    [user, user2, user3].map(a => a.address.toLowerCase()))
 
   const txHash = await sendTx(t.eth, {
     from: eoa,
@@ -372,20 +290,15 @@ test.only('replace original quorum owner', async t => {
   })
 
   const c = await t.mined(txHash)
+  const qo = new QuorumOwners(c.contractAddress, t.eth)
 
-  const [ owners ] = QuorumOwners.allOwnersDecode(await t.eth.call({
-    to: c.contractAddress,
-    gasPrice: format(1),
-    gas: format(1e6),
-    data: format(QuorumOwners.allOwnersEncode())
-  }))
+  const owners = await qo.owners()
+  t.same(owners, [user, user2, user3].map(a => a.address.toLowerCase()))
 
-  t.same(owners, [ user.address, user2.address, user3.address ].map(a => a.toLowerCase()))
-
-  const failProposal = QuorumOwners.removeOwnerPropose(c.contractAddress, count, user3.address)
+  const failProposal = await qo.removeOwner(user3.address)
   const sig1 = QuorumOwners.sign(failProposal, user)
   const sig2 = QuorumOwners.sign(failProposal, user2)
-  const failCombined = QuorumOwners.combine(owners, failProposal, [ sig1, sig2 ])
+  const failCombined = await qo.combine(failProposal, [sig1, sig2])
 
   const failData = QuorumOwners.removeOwnerEncode(...failCombined.args)
 
@@ -402,11 +315,11 @@ test.only('replace original quorum owner', async t => {
     t.pass('throws')
   }
 
-  const quorumProposal = QuorumOwners.setQuorumPropose(c.contractAddress, count++, 'removeOwner', 0.65)
+  const quorumProposal = await qo.setQuorum('removeOwner', 0.65)
   const quorumSig = QuorumOwners.sign(quorumProposal, user)
   const quorumSig2 = QuorumOwners.sign(quorumProposal, user2)
   const quorumSig3 = QuorumOwners.sign(quorumProposal, user3)
-  const quorumCombined = QuorumOwners.combine(owners, quorumProposal, [ quorumSig, quorumSig2, quorumSig3 ])
+  const quorumCombined = await qo.combine(quorumProposal, [quorumSig, quorumSig2, quorumSig3])
 
   const quorumData = QuorumOwners.setQuorumEncode(...quorumCombined.args)
 
@@ -416,12 +329,12 @@ test.only('replace original quorum owner', async t => {
     data: quorumData
   })
 
-  const c2 = await t.mined(txHash2)
+  await t.mined(txHash2)
 
-  const removeProposal = QuorumOwners.removeOwnerPropose(c.contractAddress, count, user3.address)
+  const removeProposal = await qo.removeOwner(user3.address)
   const removeSig1 = QuorumOwners.sign(removeProposal, user)
   const removeSig2 = QuorumOwners.sign(removeProposal, user2)
-  const removeCombined = QuorumOwners.combine(owners, removeProposal, [ removeSig1, removeSig2 ])
+  const removeCombined = await qo.combine(removeProposal, [removeSig1, removeSig2])
 
   const removeData = QuorumOwners.removeOwnerEncode(...removeCombined.args)
 
@@ -431,14 +344,11 @@ test.only('replace original quorum owner', async t => {
     data: removeData
   })
 
-  const [ finalOwners ] = QuorumOwners.allOwnersDecode(await t.eth.call({
-    to: c.contractAddress,
-    gasPrice: format(1),
-    gas: format(1e6),
-    data: format(QuorumOwners.allOwnersEncode())
-  }))
+  await t.mined(txHash3)
 
-  t.same(finalOwners, [ user.address, user2.address ].map(a => a.toLowerCase()))
+  const finalOwners = await qo.owners()
+  t.same(finalOwners, [user, user2].map(a => a.address.toLowerCase()))
+
   t.end()
 })
 
@@ -462,7 +372,7 @@ async function sendTx (eth, { from, to, value, data }, log = false) {
     nonce: await eth.getTransactionCount(format(from.address), 'pending')
   }, from.privateKey)
 
-  // if (log) console.error(JSON.stringify(await eth.rpc.request('trace_rawTransaction', [ format(tx.raw), [ 'trace', 'vmTrace', 'stateDiff' ] ]), null, 2))
+  if (log) fs.writeFileSync('./trace.json', JSON.stringify(await eth.rpc.request('trace_rawTransaction', [ format(tx.raw), [ 'trace', 'vmTrace', 'stateDiff' ] ]), null, 2))
 
   return eth.sendRawTransaction(format(tx.raw))
 }
@@ -473,3 +383,21 @@ async function getSequence (eth, contractAddress) {
     data: format(QuorumOwners.seqEncode())
   }))
 }
+
+async function propose (method, args, signers) {
+  const [ propose, encode ] = [ method + 'Propose', method + 'Encode' ]
+  const seq = await this.seq()
+  const proposal = QuorumOwner[propose](this.contractAddress, seq, ...args)
+
+  const sigs = []
+  for (let signer of signers) {
+    sigs.push(QuorumOwner.sign(proposal, signer))
+  }
+
+  const owners = await this.owners()
+  const combined = QuorumOwner.combine(owners, proposal, sigs)
+  const data = QuorumOwner[encode](...combined.args)
+
+  return data
+}
+

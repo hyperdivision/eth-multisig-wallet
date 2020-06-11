@@ -20,6 +20,8 @@
     "budo": "^11.6.3",
     "ethlint": "^1.2.5",
     "minimist": "^1.2.5",
+    "p-map": "^4.0.0",
+    "p-map-series": "^2.1.0",
     "parity-binary": "^1.0.3",
     "parity-spawn": "^1.0.0",
     "solc": "0.5.12",
